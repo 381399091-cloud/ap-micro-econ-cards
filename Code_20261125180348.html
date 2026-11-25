@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AP Micro 图形教练 · Graph Tutor</title>
+<style>
+:root{
+  --bg:#f7f8fa; --paper:#ffffff; --ink:#1f2d3d; --ink2:#5a6b7d; --ink3:#93a3b3;
+  --blue:#4a7fa5; --blue-l:#e8f0f6; --blue-d:#2f5a78;
+  --green:#7a9e7e; --green-l:#eaf2ea;
+  --orange:#d9834f; --orange-l:#fdf0e6;
+  --red:#c96a6a; --red-l:#fbecec;
+  --line:#e4e8ec; --radius:14px;
+  --shadow:0 1px 3px rgba(31,45,61,.06),0 8px 24px rgba(31,45,61,.05);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  font-size:15px; line-height:1.65; padding-bottom:40px;
+}
+.wrap{max-width:820px;margin:0 auto;padding:0 14px}
+
+/* ---------- 顶栏 ---------- */
+header{background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
+.hin{max-width:820px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--blue);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.logo svg{width:17px;height:17px}
+.htxt{flex:1;min-width:0}
+.htxt h1{margin:0;font-size:15.5px;font-weight:700;letter-spacing:.2px}
+.htxt p{margin:0;font-size:11.5px;color:var(--ink3)}
+.hbtn{border:1px solid var(--line);background:var(--paper);color:var(--ink2);border-radius:9px;
+  padding:7px 11px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px}
+.hbtn:active{transform:scale(.97)}
+.hbtn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+
+/* ---------- 通用 ---------- */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px}
+.card-h{padding:13px 15px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--blue-l);color:var(--blue-d);letter-spacing:.3px}
+.tag.g{background:var(--green-l);color:#4e7053}
+.tag.o{background:var(--orange-l);color:#a85e30}
+.tag.r{background:var(--red-l);color:#a84f4f}
+.card-b{padding:12px 15px 15px}
+h2.title{margin:2px 0 0;font-size:20px;font-weight:800;letter-spacing:-.2px}
+.sub{font-size:12.5px;color:var(--ink3);margin:2px 0 0}
+.btn{border:0;border-radius:10px;padding:11px 16px;font-size:14px;font-weight:700;cursor:pointer;
+  background:var(--blue);color:#fff;transition:.15s;font-family:inherit}
+.btn:active{transform:scale(.98)}
+.btn.gh{background:var(--blue-l);color:var(--blue-d)}
+.btn.gy{background:#f0f2f5;color:var(--ink2)}
+.btn.sm{padding:8px 12px;font-size:13px;border-radius:9px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- 首屏图库 ---------- */
+.hero{background:linear-gradient(135deg,#2f5a78,#4a7fa5);color:#fff;border-radius:16px;padding:17px 18px;margin:14px 0}
+.hero h2{margin:0 0 5px;font-size:18px;font-weight:800}
+.hero p{margin:0;font-size:13px;opacity:.9;line-height:1.6}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}
+.mode{background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:.15s}
+.mode.on{border-color:var(--blue);background:var(--blue-l)}
+.mode b{display:block;font-size:14px;margin-bottom:2px}
+.mode span{font-size:11.5px;color:var(--ink3);line-height:1.5}
+.glist{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.gitem{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.gitem:active{transform:scale(.98)}
+.gitem .u{font-size:10px;font-weight:700;color:var(--blue);letter-spacing:.4px}
+.gitem .n{font-size:14.5px;font-weight:700;margin:1px 0 3px}
+.gitem .d{font-size:11px;color:var(--ink3);line-height:1.45}
+.gitem .mini{position:absolute;right:-14px;top:-14px;width:62px;height:62px;opacity:.13}
+.gitem .badge{position:absolute;right:9px;bottom:9px;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:20px}
+.b-ok{background:var(--green-l);color:#4e7053}
+.b-no{background:var(--red-l);color:#a84f4f}
+.b-new{background:#f0f2f5;color:var(--ink3)}
+
+/* ---------- 图区 ---------- */
+.graphbox{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px}
+.graphbox svg{width:100%;height:auto;display:block;touch-action:none}
+.legend{display:flex;gap:12px;flex-wrap:wrap;padding:2px 8px 8px;font-size:11px;color:var(--ink2)}
+.legend i{display:inline-block;width:16px;height:0;border-top:2.5px solid;margin-right:5px;vertical-align:middle}
+
+/* ---------- 进度 ---------- */
+.prog{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.prog .bar{flex:1;height:5px;background:#eceff2;border-radius:4px;overflow:hidden}
+.prog .bar i{display:block;height:100%;background:var(--blue);border-radius:4px;transition:width .3s}
+.prog .txt{font-size:11.5px;color:var(--ink3);font-variant-numeric:tabular-nums;font-weight:600}
+
+/* ---------- 问答 ---------- */
+.qhead{display:flex;gap:9px;align-items:flex-start;margin-bottom:10px}
+.qnum{width:23px;height:23px;border-radius:7px;background:var(--blue);color:#fff;font-size:12px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:1px}
+.qnum.done{background:var(--green)}
+.qnum.warn{background:var(--orange)}
+.qtext{flex:1;font-size:15.5px;font-weight:700;line-height:1.5}
+.qhint{font-size:12px;color:var(--ink3);margin:-4px 0 10px 32px;line-height:1.55}
+.opts{display:flex;flex-direction:column;gap:7px;margin-left:32px}
+.opt{border:1.5px solid var(--line);background:var(--paper);border-radius:11px;padding:11px 13px;
+  font-size:14px;cursor:pointer;transition:.13s;text-align:left;font-family:inherit;color:var(--ink);line-height:1.5}
+.opt:active{transform:scale(.99)}
+.opt.sel{border-color:var(--blue);background:var(--blue-l)}
+.opt.ok{border-color:var(--green);background:var(--green-l)}
+.opt.no{border-color:var(--red);background:var(--red-l)}
+.opt.dis{opacity:.55;cursor:not-allowed}
+.opt b{margin-right:6px;color:var(--blue-d)}
+.ta{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:11px 13px;font-size:14.5px;
+  font-family:inherit;resize:vertical;min-height:78px;line-height:1.6;color:var(--ink);background:var(--paper)}
+.ta:focus{outline:0;border-color:var(--blue)}
+.ta:disabled{background:#f7f8fa;color:var(--ink2)}
+.inline{display:flex;gap:7px;flex-wrap:wrap;margin-left:32px}
+.inline input{flex:1;min-width:90px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;
+  font-size:14.5px;font-family:inherit;color:var(--ink)}
+.inline input:focus{outline:0;border-color:var(--blue)}
+.inline input:disabled{background:#f7f8fa}
+.unit{font-size:12px;color:var(--ink3);align-self:center;white-space:nowrap}
+
+/* ---------- 判定反馈 ---------- */
+.fb{margin:11px 0 0 32px;border-radius:11px;padding:11px 13px;font-size:13.5px;line-height:1.65;animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.fb.ok{background:var(--green-l);border:1px solid #cfe0d1}
+.fb.no{background:var(--orange-l);border:1px solid #f0dcc6}
+.fb.part{background:#fff9e8;border:1px solid #f0e2b8}
+.fb.ai{background:var(--blue-l);border:1px solid #d3e2ee}
+.fb .fh{display:flex;align-items:center;gap:6px;font-weight:800;font-size:13px;margin-bottom:5px}
+.fb .fh .ic{width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;flex:0 0 auto}
+.fb.ok .ic{background:var(--green)} .fb.no .ic{background:var(--orange)} .fb.part .ic{background:#d9b54a} .fb.ai .ic{background:var(--blue)}
+.fb ul{margin:5px 0 0;padding-left:17px}
+.fb li{margin:3px 0}
+.fb .fix{margin-top:7px;padding-top:7px;border-top:1px dashed rgba(0,0,0,.12);font-size:13px}
+.fb .fix b{color:var(--blue-d)}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--blue-l);border-top-color:var(--blue);
+  border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ---------- 默画画布 ---------- */
+.tools{display:flex;gap:6px;flex-wrap:wrap;margin-left:32px}
+.tool{border:1.5px solid var(--line);background:var(--paper);border-radius:9px;padding:7px 10px;font-size:12.5px;
+  cursor:pointer;font-family:inherit;color:var(--ink2);font-weight:600;display:flex;align-items:center;gap:5px}
+.tool.on{border-color:var(--blue);background:var(--blue);color:#fff}
+.tool .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+.hintbar{background:var(--blue-l);border-radius:9px;padding:9px 12px;font-size:12.5px;color:var(--blue-d);margin-left:32px;line-height:1.55}
+
+/* ---------- 结算 ---------- */
+.result{text-align:center;padding:8px 0}
+.result .score{font-size:38px;font-weight:800;letter-spacing:-1px;line-height:1}
+.result .score small{font-size:16px;color:var(--ink3);font-weight:600}
+.result .lvl{font-size:14px;font-weight:700;margin-top:5px}
+.misslist{text-align:left;margin-top:12px;border-top:1px dashed var(--line);padding-top:11px}
+.misslist .m{font-size:13px;padding:7px 10px;background:var(--red-l);border-radius:9px;margin-bottom:6px;line-height:1.55}
+.misslist .m b{color:#a84f4f}
+
+/* ---------- 错题本 ---------- */
+.wbempty{text-align:center;padding:26px 10px;color:var(--ink3);font-size:13px}
+.wbg{font-size:11px;font-weight:700;color:var(--blue);margin:12px 0 6px;letter-spacing:.3px}
+.wbi{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:7px}
+.wbi .q{font-size:13.5px;font-weight:700}
+.wbi .a{font-size:12.5px;color:var(--ink2);margin-top:3px;line-height:1.55}
+.wbi .meta{font-size:11px;color:var(--ink3);margin-top:5px;display:flex;justify-content:space-between;align-items:center}
+.wbi .del{border:0;background:none;color:var(--ink3);font-size:11.5px;cursor:pointer;font-family:inherit;text-decoration:underline}
+
+/* ---------- 设置 ---------- */
+.field{margin-bottom:11px}
+.field label{display:block;font-size:12.5px;font-weight:700;margin-bottom:5px;color:var(--ink2)}
+.field input,.field select{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;
+  font-size:14px;font-family:inherit;color:var(--ink);background:var(--paper)}
+.field input:focus,.field select:focus{outline:0;border-color:var(--blue)}
+.field .h{font-size:11.5px;color:var(--ink3);margin-top:4px;line-height:1.5}
+.note{background:var(--orange-l);border:1px solid #f0dcc6;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#8a5730;line-height:1.6}
+.note b{color:#a85e30}
+.mask{position:fixed;inset:0;background:rgba(31,45,61,.5);z-index:100;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--paper);border-radius:18px 18px 0 0;width:100%;max-width:820px;max-height:88vh;overflow:auto;padding:18px 16px 30px;animation:up .25s ease}
+@keyframes up{from{transform:translateY(20px);opacity:.6}to{transform:none;opacity:1}}
+.sheet h3{margin:0 0 3px;font-size:17px;font-weight:800}
+.sheet .cl{position:absolute;right:14px;top:12px;border:0;background:#f0f2f5;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:15px;color:var(--ink2)}
+.foot{text-align:center;font-size:11px;color:var(--ink3);padding:16px 10px 0;line-height:1.7}
+.hidden{display:none!important}
+@media(max-width:520px){
+  .glist,.modes{grid-template-columns:1fr}
+  h2.title{font-size:18px}
+  .qtext{font-size:15px}
+}
+
+/* ===== 双语切换 ===== */
+i[data-en]{font-style:normal}
+body.lang-en i[data-en]{color:var(--blue-d);font-weight:600}
+body.lang-en i[data-en]:after{content:attr(data-en);display:block;font-size:.9em;color:var(--ink2);font-weight:500;line-height:1.45;margin-top:2px}
+body.lang-cn i[data-en]:after{content:attr(data-en);display:block;font-size:.84em;color:var(--ink3);font-weight:400;line-height:1.4;margin-top:1px}
+.langsw{display:flex;background:#eceff2;border-radius:9px;padding:2px;gap:2px;flex:0 0 auto}
+.langsw{position:relative}.langsw:after{content:attr(data-tip);position:absolute;top:110%;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10.5px;color:var(--ink3);}.langsw button{border:0;background:transparent;font:inherit;font-size:12px;font-weight:700;color:var(--ink3);padding:5px 9px;border-radius:7px;cursor:pointer}
+.langsw button.on{background:var(--paper);color:var(--blue-d);box-shadow:0 1px 3px rgba(31,45,61,.12)}
+</style>
+</head>
+<body class="lang-both">
+
+<header>
+  <div class="hin">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/><path d="M7 15l4-6 4 4 5-8"/>
+      </svg>
+    </div>
+    <div class="htxt">
+      <h1>AP Micro 图形教练</h1>
+      <p id="hsub">12 个核心图 · 分步追问 · 即时判定</p>
+    </div>
+    <button class="hbtn" onclick="openWB()"><i data-en="Mistake Log">错题本</i><span id="wbnum"></span></button>
+    <button class="hbtn" onclick="openSet()"><i data-en="Settings">设置</i></button>
+  </div>
+</header>
+
+<div class="wrap" id="app"></div>
+
+<div class="foot">
+  本地规则引擎即时判定 + 可选 AI 深度批改 · 数据仅存本机浏览器<br>
+  判定依据 AP Micro 考纲口径，AI 反馈仅供参考，以官方评分标准为准
+</div>
+
+<script>
+/* ============================================================
+   一、坐标系与绘图基元
+   ============================================================ */
+const VB = {w: 340, h: 300};          // SVG viewBox
+const P = {l: 46, r: 322, t: 16, b: 258};  // 绘图区边界
+const X = v => P.l + (P.r - P.l) * v;      // 0~1 → x坐标
+const Y = v => P.b - (P.b - P.t) * v;      // 0~1 → y坐标（底部=0）
+
+// 一条从 (x1,y1) 到 (x2,y2) 的线段（坐标为 0~1 归一化）
+function seg(x1, y1, x2, y2, o = {}) {
+  const w = o.w || 2.6, c = o.c || 'var(--blue)', d = o.dash ? ' stroke-dasharray="5 4"' : '';
+  return `<line x1="${X(x1).toFixed(1)}" y1="${Y(y1).toFixed(1)}" x2="${X(x2).toFixed(1)}" y2="${Y(y2).toFixed(1)}"
+    stroke="${c}" stroke-width="${w}" stroke-linecap="round"${d}/>`;
+}
+// 折线（点数组）
+function poly(pts, o = {}) {
+  const w = o.w || 2.6, c = o.c || 'var(--blue)', d = o.dash ? ' stroke-dasharray="5 4"' : '';
+  return `<polyline points="${pts.map(p => X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(' ')}"
+    fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"${d}/>`;
+}
+// 曲线：给了函数就采样
+function curve(fn, x1, x2, o = {}, n = 46) {
+  const pts = [];
+  for (let i = 0; i <= n; i++) { const x = x1 + (x2 - x1) * i / n; pts.push([x, fn(x)]); }
+  return poly(pts, o);
+}
+function dot(x, y, o = {}) {
+  const c = o.c || 'var(--ink)', r = o.r || 4;
+  return `<circle cx="${X(x).toFixed(1)}" cy="${Y(y).toFixed(1)}" r="${r}" fill="${c}"/>`;
+}
+// 从点向两轴引虚线
+function proj(x, y, o = {}) {
+  const c = o.c || 'var(--ink3)';
+  return `<g stroke="${c}" stroke-width="1.2" stroke-dasharray="3 3">`
+    + `<line x1="${X(x)}" y1="${Y(y)}" x2="${X(x)}" y2="${P.b}"/>`
+    + `<line x1="${X(x)}" y1="${Y(y)}" x2="${P.l}" y2="${Y(y)}"/></g>`;
+}
+// 标注文字
+function lab(x, y, t, o = {}) {
+  const c = o.c || 'var(--ink2)', s = o.s || 11.5, a = o.a || 'start', fw = o.fw || 600;
+  const dx = o.dx || 0, dy = o.dy || 0;
+  return `<text x="${X(x) + dx}" y="${Y(y) + dy}" fill="${c}" font-size="${s}" font-weight="${fw}"
+    text-anchor="${a}" font-family="inherit">${t}</text>`;
+}
+// 阴影矩形（两线之间的区域）
+function shade(x1, x2, yTop, yBot, o = {}) {
+  const c = o.c || 'var(--orange)';
+  let body = `<line x1="${X(x1)}" y1="${Y(yTop(x1))}" x2="${X(x2)}" y2="${Y(yTop(x2))}"/>`;
+  const n = 30;
+  for (let i = 0; i <= n; i++) {
+    const x = x1 + (x2 - x1) * i / n;
+    body += `<line x1="${X(x).toFixed(1)}" y1="${Y(yTop(x)).toFixed(1)}" x2="${X(x).toFixed(1)}" y2="${Y(yBot(x)).toFixed(1)}"/>`;
+  }
+  return `<g stroke="${c}" stroke-width="1.6" opacity=".5">${body}</g>`;
+}
+function axes(ax, ay) {
+  return `<g stroke="var(--ink3)" stroke-width="1.8" stroke-linecap="round">
+    <line x1="${P.l}" y1="${P.t}" x2="${P.l}" y2="${P.b}"/>
+    <line x1="${P.l}" y1="${P.b}" x2="${P.r}" y2="${P.b}"/></g>
+    ${lab(0, 0, ay, {a: 'end', dx: -7, dy: 4, c: 'var(--ink2)', s: 12.5})}
+    ${lab(1, 0, ax, {a: 'end', dx: 6, dy: 16, c: 'var(--ink2)', s: 12.5})}
+    ${lab(0, 0, 'O', {a: 'end', dx: -6, dy: 15, c: 'var(--ink3)', s: 11, fw: 600})}`;
+}
+function svgWrap(inner, legend) {
+  return `<div class="graphbox"><svg viewBox="0 0 ${VB.w} ${VB.h}" xmlns="http://www.w3.org/2000/svg">${inner}</svg>
+    ${legend ? `<div class="legend">${legend}</div>` : ''}</div>`;
+}
+const C = { d: 'var(--blue)', s: 'var(--green)', o: 'var(--orange)', x: '#a06b9e', m: '#6f9bb5', u: 'var(--red)' };
+const LG = (arr) => arr.map(([c, t, col]) => `<span><i style="border-color:${col}"></i>${t}</span>`).join('');
+
+/* ============================================================
+   二、图库：每张图 = 绘制函数 + 分步问题序列
+   题型：mc 选择 / num 数字 / text 开放表述
+   ============================================================ */
+const GRAPHS = [
+{
+  id: 'demand', u: 'Unit 2', name: '供需均衡', en: 'Supply & Demand',
+  desc: 'This is the foundation of the whole unit. Every market question you see is just a variation of this graph.',
+  must: 'Downward-sloping D, upward-sloping S, their intersection at E, with dashed lines dropped from E to each axis to mark Pe and Qe',
+  draw: () => {
+    const D = x => 0.86 - 0.66 * x, S = x => 0.14 + 0.66 * x;
+    return svgWrap(axes('<i data-en="Q Quantity">Q 数量</i>', '<i data-en="P Price">P 价格</i>')
+      + curve(D, 0.03, 0.97, {c: C.d}) + lab(0.97, D(0.97), 'D', {dx: 5, dy: 4, c: C.d, s: 13})
+      + curve(S, 0.03, 0.97, {c: C.s}) + lab(0.97, S(0.97), 'S', {dx: 5, dy: -4, c: C.s, s: 13})
+      + proj(0.545, 0.5) + dot(0.545, 0.5, {c: 'var(--ink)'}) + lab(0.545, 0.5, 'E', {dx: 7, dy: -6, fw: 800})
+      + lab(1, 0.5, 'Pe', {dx: 6, dy: 4}) + lab(0.545, 0, 'Qe', {dx: -4, dy: 16}),
+      LG([['', '<i data-en="D Demand">D 需求</i>', C.d], ['', '<i data-en="S Supply">S 供给</i>', C.s]]));
+  },
+  full: '<i data-en="D slopes down because of diminishing marginal utility, and S slopes up because of increasing marginal cost. Their intersection at E determines Pe and Qe. Above Pe you get a surplus; below Pe you get a shortage. Market forces always push the price back to E.">D 向右下倾斜（边际效用递减），S 向右上倾斜（边际成本递增），交点 E 决定 Pe 与 Qe。价格高于 Pe 出现过剩（surplus），低于 Pe 出现短缺（shortage），市场力量会把价格推回 E。</i>',
+ Qs: [
+    {t: 'mc', q: 'What&#39;s on the horizontal axis and what&#39;s on the vertical axis?', hint: '<i data-en="First move on any AP Econ graph: always read the axes before anything else.">AP 经济第一件事永远是先看轴。</i>',
+     o: ['Horizontal axis Q (quantity), vertical axis P (price)', 'Horizontal axis P (price), vertical axis Q (quantity)', 'Horizontal axis Q (quantity), vertical axis TC (total cost)', 'Horizontal axis t (time), vertical axis P (price)'], a: 0,
+     ok: 'Exactly. Quantity Q goes on the horizontal axis and price P on the vertical axis. Nearly every AP Micro graph works this way, so reading the axes before the curves should be automatic.',
+     no: '横轴是数量 Q，纵轴是价格 P。注意微观图表默认这个约定，看错轴后面全错，养成"先读轴"的肌肉记忆。'},
+    {t: 'mc', q: 'Why does the demand curve D slope downward?', hint: '想"as she buys one more unit, what happens to the most she&#39;s willing to pay"。',
+     o: ['Diminishing marginal utility: each additional unit is worth less to the consumer, so her willingness to pay falls', '生产者产量越大成本越低', '政府规定了价格上限', '因为供给曲线在往上走'], a: 0,
+     ok: '正确。边际效用递减 → 每多一单位商品，消费者愿付的最高价下降，所以 D 向下倾斜。这条逻辑也是后面"消费者剩余"的根。',
+     no: 'The answer is diminishing marginal utility: each extra unit consumed adds less satisfaction, so willingness to pay drops. The choice you picked describes producer behavior and cost, which explains the supply curve S instead. Keep those two separate.'},
+    {t: 'mc', q: 'Consumer income rises and this is a normal good. What happens on the graph?', hint: '收入变了，是"曲线整体移动"还是"沿曲线滑一下"？',
+     o: ['<i data-en="The D curve shifts right; both Pe and Qe rise">D 曲线整体右移，Pe 和 Qe 都上升</i>', 'A movement down and to the right along D; only Q changes', '<i data-en="The S curve shifts left and price rises">S 曲线左移，价格上升</i>', '完全不变'], a: 0,
+     ok: '对。收入是"曲线外的变量"，它一变就是整条 D 右移，新交点对应更高的 Pe 和 Qe。',
+     no: '<i data-en="D shifts right, so Pe and Qe both go up. Here&#39;s the quick rule: if the good&#39;s own price changes, it&#39;s a movement along the curve. If anything else changes (income, tastes, prices of related goods, expectations, number of buyers), the whole curve shifts. This is the single most common trap on the AP exam, so take a second look at it.">D 曲线整体右移 → Pe、Qe 双双上升。判断口诀：价格本身变 → 沿线移动；价格以外的因素（收入、偏好、相关品价格、预期、买者数量）变 → 整条线平移。这题你踩的正是 AP 失分第一名的坑。</i>'},
+    {t: 'num', q: 'Suppose the equilibrium price Pe = 8, and quantity demanded equals quantity supplied at 50 units. What is total spending (P × Q) at equilibrium?', hint: 'Just multiply it out and enter the number.',
+     ans: 400, unit: '<i data-en="(enter the number only, no units)">（直接输数字，不要写单位）</i>', tol: 0,
+     ok: '<i data-en="400, nice work. P × Q = 8 × 50 = 400. That&#39;s total spending in the market, which is also total revenue for sellers.">400，没错。P × Q = 8 × 50 = 400，这就是市场上的总支出，也等于卖方总收益。</i>',
+     no: '答案是 400：8 × 50 = 400。这类计算题 AP 常放在选择题里当"送分关"，算错通常是因为没看清单位或把 P 和 Q 加起来了。'},
+    {t: 'text', q: '政府把价格定在低于 Pe 的位置，会发生什么？请用"shortage / surplus"和"数量由谁决定"讲清楚逻辑链。',
+     hint: 'Three steps: at the lower price, what&#39;s quantity demanded? What&#39;s quantity supplied? Which one is larger, and which side ends up deciding how much actually gets traded?',
+     kp: [['短缺|shortage|供不应求|shortage|excess demand', '价格低于均衡 → 需求量 > 供给量，出现短缺（shortage）'],
+          ['需求量大|量多|Qd|quantity demanded is higher|Qd', 'The low price gives consumers an incentive to buy more, so Qd rises'],
+          ['供给量少|减少|Qs|quantity supplied is lower|Qs', 'The low price makes production less worthwhile, so Qs falls'],
+          ['较小的|少的那个|供给量决定|short side|由卖方|smaller|short side|determined by Qs|sellers', 'The quantity actually traded is set by the smaller side, which here is Qs. Sellers call the shots.']],
+     ok: 'That&#39;s a complete chain: lower price → Qd up, Qs down → shortage → quantity traded determined by the smaller amount, Qs. This is exactly how you want to structure any price ceiling or price floor question.',
+     part: '方向对了，但链条不完整。标准答法要三步齐：① 价格低于 Pe；② Qd > Qs 形成短缺；③ 实际交易量由较小的一方（Qs）决定，卖方占主动。缺的那步就是你丢分的地方。',
+     no: '正确链条是：价格被压到 Pe 以下 → 消费者想买更多（Qd↑）、生产者不愿供给（Qs↓）→ 出现短缺（shortage）→ 真实成交量由较小的 Qs 决定。记住"trades clear on the short side"这条规则，所有数量管制题都用它。'}
+  ]
+},
+{
+  id: 'elasticity', u: 'Unit 3', name: '价格弹性', en: 'Elasticity',
+  desc: '斜率 ≠ 弹性。这张图考的是"同一条线上弹性不同"。',
+  draw: () => {
+    const D = x => 0.82 - 0.72 * x;
+    return svgWrap(axes('<i data-en="Q Quantity">Q 数量</i>', '<i data-en="P Price">P 价格</i>')
+      + curve(D, 0.03, 0.97, {c: C.d}) + lab(0.97, D(0.97), 'D', {dx: 5, dy: -4, c: C.d, s: 13})
+      + seg(0.10, D(0.10), 0.10, 0, {c: C.o, w: 2, dash: 1}) + lab(0.10, 0, '高价区', {a: 'middle', dy: 15, c: C.o, s: 10.5})
+      + seg(0.82, D(0.82), 0.82, 0, {c: C.s, w: 2, dash: 1}) + lab(0.82, 0, '低价区', {a: 'middle', dy: 15, c: '#4e7053', s: 10.5})
+      + seg(0.10, D(0.10), 0.50, D(0.10), {c: C.o, w: 1.4, dash: 1})
+      + seg(0.82, D(0.82), 0.93, D(0.82), {c: C.s, w: 1.4, dash: 1})
+      + lab(0.50, D(0.10), 'the same ΔP drop', {a: 'middle', dy: -5, c: C.o, s: 10.5})
+      + lab(0.93, D(0.82), '<i data-en="Q barely budges">Q 只多一点点</i>', {dx: 4, dy: -5, c: '#4e7053', s: 10.5}),
+      LG([['', '<i data-en="D Demand (linear)">D 需求（直线）</i>', C.d], ['', '弹性大 >1', C.o], ['', '弹性小 <1', C.s]]));
+  },
+  full: '直线需求曲线斜率处处相同，但弹性从左上到右下递减：高价区弹性>1（富有弹性），中点=1，低价区<1（缺乏弹性）。原因是在高价区，同样的 ΔP 只占价格很小比例，而带来的 ΔQ 占数量很大比例。',
+  must: '一条向右下倾斜的直线 D，并在高处和低处各标一段，体现"the same ΔP produces very different ΔQ depending on where you are"',
+  Qs: [
+    {t: 'mc', q: '弹性系数 Ed > 1 意味着什么？', hint: 'The numerator is the percent change in Q; the denominator is the percent change in P.',
+     o: ['<i data-en="The percent change in Q is greater than the percent change in P">Q 变动的百分比大于 P 变动的百分比</i>', '<i data-en="The percent change in P is greater than the percent change in Q">P 变动的百分比大于 Q 变动的百分比</i>', '曲线一定是水平的', '价格和数量同方向变动'], a: 0,
+     ok: '对。Ed = |%ΔQ / %ΔP|，大于 1 就是"量对价格很敏感"，叫富有弹性（elastic）。',
+     no: 'Ed = |%ΔQ ÷ %ΔP|，>1 表示需求量变动的百分比更大，叫富有弹性。你选反了——记住分子永远是 Q。'},
+    {t: 'mc', q: 'As you move down a straight-line demand curve from upper left to lower right, what happens to elasticity?', hint: 'The slope stays constant, but the base values of P and Q keep changing.',
+     o: ['弹性越来越小，从 >1 经过 =1 变成 <1', '弹性越来越大', 'It stays the same because the slope is constant', '先变大后变小'], a: 0,
+     ok: 'Correct. This is the classic Unit 3 trap: constant slope does not mean constant elasticity. Up top, P is large and Q is small, so the same ΔP is a small percentage while the same ΔQ is a large one. That makes elasticity high.',
+     no: '弹性从大到小：左上高价区 >1，中点 =1，右下低价区 <1。你被"斜率不变"骗了——弹性看的是百分比变化，基数（P 和 Q）在沿线变，所以弹性一定变。'},
+    {t: 'num', q: 'The price of coffee rises 10% and quantity sold falls 25%. What is Ed? (Enter the absolute value, rounded to one decimal.)',
+     hint: 'Just divide the percentages directly; no midpoint formula needed here.', ans: 2.5, unit: '<i data-en="(enter 2.5)">（填 2.5）</i>', tol: 0.05,
+     ok: '2.5。25 ÷ 10 = 2.5 > 1，属于富有弹性，提价反而会让总收益下降。',
+     no: '<i data-en="Ed = 25 ÷ 10 = 2.5. Watch two things: don&#39;t flip the numerator and denominator, and don&#39;t drop the absolute value. We report price elasticity of demand as a positive number since D slopes down.">Ed = 25 ÷ 10 = 2.5。算的时候别把分子分母倒过来，也别漏掉绝对值（需求弹性习惯取正数，因为 D 本身是负斜率）。</i>'},
+    {t: 'mc', q: 'A good has an Ed of 0.4. If the seller wants to raise total revenue (TR = P × Q), what should they do?', hint: '缺乏弹性时，量和价谁"跑得慢"？',
+     o: ['Raise price, because quantity falls more slowly than price rises', 'Lower price, because quantity rises faster than price falls', '涨价降价都一样', '无法判断'], a: 0,
+     ok: '对。缺乏弹性（Ed<1）时涨价，Q 只掉一点点，P 涨的幅度更大，TR 上升。这就是"总收益检验法"。',
+     no: '应该涨价。Ed=0.4<1 表示量对价格不敏感，涨价时 Q 掉得少、P 涨得多，TR 上升。记住这条对应关系：弹性>1 涨价亏、弹性<1 涨价赚，AP 每年必考。'},
+    {t: 'text', q: '用图解释：为什么直线需求曲线在高价区弹性大、低价区弹性小？（要说到"百分比"和"基数"）',
+     hint: 'Two things to hit: the same ΔP is a different share of the price at different price levels, and the same ΔQ is a different share of quantity at different quantity levels.',
+     kp: [['百分比|%|比例|percent|%|proportion', 'Elasticity is about percentage change, not absolute change'],
+          ['高价区|价格高|基数大|high-price region|high price|large base', 'Up top, P is a large base, so the same ΔP is a small share of the price'],
+          ['数量小|Q 小|基数小|small quantity|low Q|small base', 'Down low, Q is a large base, so the same ΔQ is a small share of quantity'],
+          ['分子|分母|%ΔQ|%ΔP|numerator|denominator|%ΔQ|%ΔP', '<i data-en="Ed = %ΔQ / %ΔP, and because both bases shift as you move down the curve, elasticity falls steadily along it">Ed = %ΔQ / %ΔP，分子分母的基数同时变化，导致弹性沿线递减</i>']],
+     ok: 'You&#39;ve got the heart of it: elasticity is a ratio of percentages, and the bases keep changing, so elasticity varies even though the slope doesn&#39;t. That&#39;s the exact wording that earns full credit on Unit 3.',
+     part: '方向对，但没讲透"为什么"。补上这句就够了：Ed = %ΔQ/%ΔP，高价区 P 大 Q 小 → 分母占比小、分子占比大 → 弹性大；低价区正好反过来。',
+     no: '关键在"百分比"三个字。Ed = %ΔQ ÷ %ΔP，不是 ΔQ ÷ ΔP。高价区 P 的基数大，同样的 ΔP 只占很小比例；而 Q 的基数小，同样的 ΔQ 占很大比例 → 比值大。到低价区两者反过来，弹性就掉到 1 以下。'}
+  ]
+},
+{
+  id: 'ceiling', u: 'Unit 2', name: '价格上限与下限', en: 'Price Ceiling / Floor',
+  desc: 'This is where students lose the most points. One question decides it all: is the controlled price above or below equilibrium? That tells you whether it binds.',
+  draw: () => {
+    const D = x => 0.88 - 0.66 * x, S = x => 0.12 + 0.66 * x;
+    const pc = 0.30, qs = (pc - 0.12) / 0.66, qd = (0.88 - pc) / 0.66;
+    return svgWrap(axes('<i data-en="Q Quantity">Q 数量</i>', '<i data-en="P Price">P 价格</i>')
+      + curve(D, 0.03, 0.99, {c: C.d}) + lab(0.99, D(0.99), 'D', {dx: 4, dy: -4, c: C.d, s: 13})
+      + curve(S, 0.03, 0.99, {c: C.s}) + lab(0.99, S(0.99), 'S', {dx: 4, dy: -4, c: C.s, s: 13})
+      + seg(0, pc, 1, pc, {c: C.o, w: 2.4, dash: 1}) + lab(0, pc, '价格上限', {dy: -6, c: C.o, s: 11.5, fw: 800})
+      + seg(qs, pc, qs, 0, {c: C.o, w: 1.2, dash: 1}) + seg(qd, pc, qd, 0, {c: C.o, w: 1.2, dash: 1})
+      + dot(qs, pc, {c: C.o, r: 3.6}) + dot(qd, pc, {c: C.o, r: 3.6})
+      + lab(qs, pc, 'Qs', {a: 'middle', dy: -7, c: '#a85e30', s: 11})
+      + lab(qd, pc, 'Qd', {a: 'middle', dy: -7, c: '#a85e30', s: 11})
+      + `<g stroke="${C.u}" stroke-width="2" stroke-dasharray="4 3"><line x1="${X(qs)}" y1="${Y(pc) - 5}" x2="${X(qd)}" y2="${Y(pc) - 5}"/></g>`
+      + lab((qs + qd) / 2, pc, '短缺', {a: 'middle', dy: -9, c: C.u, s: 11.5, fw: 800})
+      + lab(0.545, 0.5, 'E', {dx: 7, dy: -6, fw: 800}),
+      LG([['', '<i data-en="D Demand">D 需求</i>', C.d], ['', '<i data-en="S Supply">S 供给</i>', C.s], ['', '有约束力的价格上限', C.o]]));
+  },
+  full: '价格上限（ceiling）设在 Pe 以下才有约束力 → 短缺；设在 Pe 以上无效。价格下限（floor，如最低工资）设在 Pe 以上才有约束力 → 过剩。成交数量永远由"短边"决定。',
+  must: '<i data-en="D, S, a horizontal price ceiling line below the equilibrium price, with Qs and Qd marked on the ceiling line and the shortage gap between them">D、S、低于均衡价的一条水平价格上限线，以及上限线上的 Qs 与 Qd 和中间的短缺区间</i>',
+  Qs: [
+    {t: 'mc', q: 'In this graph the price ceiling sits below Pe. What&#39;s the result?', hint: 'At that lower price, which side is more eager to trade, buyers or sellers?',
+     o: ['短缺，因为 Qd > Qs', '过剩，因为 Qs > Qd', 'No effect; the market still clears at E', '供给曲线会右移'], a: 0,
+     ok: '对。上限压在 Pe 以下 → 消费者想买的多、生产者愿卖的少 → 短缺。这种上限叫"binding"。',
+     no: '是短缺。价格被压低 → Qd 上升、Qs 下降 → Qd > Qs。你若选了过剩，那是价格"下限"的结果，两者方向正好相反，务必分清。'},
+    {t: 'mc', q: 'Say the government sets a rent ceiling at $5,000, but the market equilibrium rent is $3,000. What happens?', hint: 'Hint: who, if anyone, is actually being stopped by this law?',
+     o: ['No effect; the market still clears at Pe', '出现严重短缺', '出现过剩', '需求曲线左移'], a: 0,
+     ok: '正确。这叫"non-binding ceiling"——房东本来就只能收 3000，法律允许到 5000，等于没管。AP 特别爱考这个"看起来管了其实没管"的情形。',
+     no: 'No effect. The ceiling is above equilibrium, so the $3,000 market price was legal to begin with and the law never binds. One sentence to remember: a ceiling binds only below Pe, and a floor binds only above Pe.'},
+    {t: 'mc', q: 'After a binding price ceiling is imposed, the quantity actually traded equals?', hint: '想"短边原则"。',
+     o: ['<i data-en="Qs, the smaller of the two quantities">Qs（较小的那个量）</i>', '<i data-en="Qd, the larger of the two quantities">Qd（较大的那个量）</i>', 'The original Qe', '<i data-en="The average of Qd and Qs">Qd 与 Qs 的平均值</i>'], a: 0,
+     ok: 'Right, trades clear on the short side. It doesn&#39;t matter how many people want in; there are only Qs units to go around.',
+     no: '等于 Qs，也就是较小的那一边。短缺不是"成交更多"，而是"想买的人买不到"。所有数量管制题都用短边原则：成交量 = min(Qd, Qs)。'},
+    {t: 'text', q: 'What non-price consequences follow from a price ceiling? Name at least two, and explain why long lines and black markets show up.',
+     hint: 'If price can&#39;t allocate the good anymore, what does? Think rationing devices.',
+     kp: [['排队|等待|排长队|queue|waiting in line|long lines|queue', 'With too little supply, the good has to be rationed some other way, and waiting in line is the most common'],
+          ['黑市|非法|黑市交易|转售|black market|illegal resale|black marketeering', 'Buyers who&#39;d gladly pay above the ceiling can&#39;t legally do it, so a black market forms, often at a price above Pe'],
+          ['质量下降|降质|quality|lower quality|quality deterioration', 'Sellers know the good will sell regardless, so they cut quality and service to save on costs'],
+          ['无谓损失|效率损失|DWL|死重|deadweight loss|DWL|efficiency loss', 'Quantity traded falls below Qe, mutually beneficial surplus disappears, and deadweight loss results'],
+          ['配给|非价格|non-price|rationing|non-price rationing', '配给机制从"价格"变成"first come, first served, personal connections, or a lottery"']],
+     ok: 'Nicely done. Non-price rationing, black markets, lower quality, deadweight loss, any two of those earn the points, and you hit all of them.',
+     part: 'You&#39;re partway there. One more line gets you full credit: once price is off the table as a rationing tool, society falls back on non-price methods like waiting in line, connections, or lotteries, and that&#39;s exactly where black markets and long queues come from.',
+     no: '标准答案要点：① 短缺导致非价格配给（排队、先到先得、凭关系）；② 黑市出现，黑市价常高于 Pe；③ 卖方降低质量/服务；④ 成交量低于均衡 → 无谓损失。核心机制是"once price can&#39;t sort buyers anymore, something else has to"。'},
+    {t: 'text', q: 'The minimum wage, which is a type of price floor, goes up. What happens to employment among teenagers and low-skill workers, and why do economists disagree about it?',
+     hint: 'Start by drawing the floor above Pe, which gives a surplus. Then ask yourself: if the demand for labor is inelastic, could that surplus be pretty small?',
+     kp: [['失业|就业减少|雇佣减少|被解雇|unemployment|job loss|fewer hired|laid off', '高于均衡的最低温饱 → 劳动力供给>需求 → 失业（过剩）'],
+          ['青少年|低技能|年轻人|teenagers|low-skill workers|young workers', 'The hardest-hit group is young, low-skill, inexperienced workers'],
+          ['弹性|elastic|需求弹性小|elasticity|inelastic demand|inelastic labor demand', 'If labor demand is inelastic, the drop in employment will be small'],
+          ['效率工资|士气|生产率|提高生产力|efficiency wage|morale|productivity', 'One camp argues that higher wages boost morale and productivity and cut turnover, offsetting the job losses'],
+          ['买方垄断|monopsony|monopsony|monopsonistic employer', 'If employers have monopsony power, a moderate minimum wage can actually increase employment']],
+     ok: '两边都讲到了，这就是 AP 想要的"能说清争议"的答案，而不是站队。',
+     part: 'You&#39;ve got half the mechanism. Now add the other half, the debate: if labor demand is inelastic, or efficiency-wage effects kick in, or employers have monopsony power, the job loss can be tiny or nonexistent. That&#39;s why the empirical studies don&#39;t agree.',
+     no: 'You need both parts. First, the standard model: a minimum wage above the equilibrium wage creates a surplus of labor, which is unemployment, and it hits teenagers and low-skill workers hardest. Second, the debate is about where reality departs from the model: labor demand may be inelastic (so fewer jobs are lost), higher wages may raise productivity and retention (the efficiency-wage effect), and if employers have monopsony power, a minimum wage can even raise employment.'}
+  ]
+},
+{
+  id: 'tax', u: 'Unit 2', name: '税收与无谓损失', en: 'Tax & DWL',
+  desc: 'The tax wedge, who bears the burden, elasticity deciding who pays: this is the capstone question type for Unit 2.',
+  draw: () => {
+    const D = x => 0.90 - 0.68 * x, S = x => 0.10 + 0.68 * x, t = 0.22;
+    const qt = (0.90 - 0.68 * 0 - t - 0.10) / (0.68 + 0.68);
+    const pb = D(qt), ps = S(qt);
+    return svgWrap(axes('<i data-en="Q Quantity">Q 数量</i>', '<i data-en="P Price">P 价格</i>')
+      + curve(D, 0.03, 0.99, {c: C.d}) + lab(0.99, D(0.99), 'D', {dx: 4, dy: -4, c: C.d, s: 13})
+      + curve(S, 0.03, 0.99, {c: C.s}) + lab(0.99, S(0.99), 'S', {dx: 4, dy: -4, c: C.s, s: 13})
+      + seg(0, pb, 1, pb, {c: C.o, w: 1.6, dash: 1}) + seg(0, ps, 1, ps, {c: C.o, w: 1.6, dash: 1})
+      + lab(0, pb, 'Pb', {dx: -6, dy: -4, c: '#a85e30', s: 12, fw: 800})
+      + lab(0, ps, 'Ps', {dx: -6, dy: 12, c: '#a85e30', s: 12, fw: 800})
+      + seg(qt, ps, qt, pb, {c: C.u, w: 3}) + lab(qt, (pb + ps) / 2, 'Tax per unit, t', {dx: 6, dy: 4, c: C.u, s: 11.5, fw: 800})
+      + shade(qt, 0.588, x => D(x), x => S(x), {c: C.u})
+      + lab(qt + 0.16, 0.30, 'DWL', {a: 'middle', c: C.u, s: 12, fw: 800})
+      + lab(qt, 0, 'Qt', {a: 'middle', dy: 15, s: 11})
+      + lab(0.588, 0, 'Qe', {a: 'middle', dy: 15, s: 11, c: C.s}),
+      LG([['', 'D / S', C.d], ['', 'Tax wedge, Pb − Ps', C.u], ['', '<i data-en="DWL (deadweight loss)">DWL 无谓损失</i>', C.u]]));
+  },
+  full: 'A tax drives a wedge t = Pb − Ps between what buyers pay and what sellers receive, and quantity falls from Qe to Qt. Government revenue is t × Qt (the shaded rectangle). Deadweight loss is ½ × t × (Qe − Qt) (the triangle). The more elastic demand and supply are, the larger the DWL.',
+  must: '<i data-en="D, S, the post-tax quantity Qt, the tax-wedge segment between Pb and Ps, and the DWL triangle between Qt and Qe">D、S、税后的 Qt，以及夹在 Pb 与 Ps 之间的税楔线段、Qt 到 Qe 之间的 DWL 三角形</i>',
+  Qs: [
+    {t: 'mc', q: 'After a tax is imposed, what&#39;s the relationship between the price buyers pay (Pb) and the price sellers receive (Ps)?', hint: 'The wedge sits right between them.',
+     o: ['<i data-en="Pb − Ps = the per-unit tax t">Pb − Ps = 单位税额 t</i>', '<i data-en="Pb = Ps; the government collects the tax separately">Pb = Ps，税由政府另收</i>', 'Ps − Pb = t', 'Pb + Ps = t'], a: 0,
+     ok: 'Exactly. Pb − Ps = t. That gap is the tax wedge, and it&#39;s where every tax graph begins.',
+     no: '<i data-en="Pb − Ps = t. Buyers pay more, sellers keep less, and the difference is the tax. If you picked Ps − Pb = t, you&#39;ve got the direction backwards: buyers always pay the higher amount.">Pb − Ps = t。买方多付、卖方少收，中间的差额就是税。你若选 Ps − Pb = t，说明把方向搞反了——买方付的一定更高。</i>'},
+    {t: 'mc', q: 'If demand is highly inelastic (think an addictive good) and supply is relatively elastic, who ends up carrying most of the tax burden?', hint: '谁更"跑不掉"，谁扛得多。',
+     o: ['Buyers (consumers)', 'Sellers (producers)', '双方完全平均', '政府自己'], a: 0,
+     ok: '正确。弹性小的一方调整不了行为，只能自己消化。这就是"tax incidence depends on relative elasticity, not on whom the law writes the check to"。',
+     no: 'It falls on buyers. One-sentence rule: the tax burden lands on whichever side is more inelastic, no matter who legally remits it. Addictive goods have almost no elasticity of demand, so consumers eat nearly the whole thing.'},
+    {t: 'num', q: 'A tax of t = $4 per unit cuts quantity from Qe = 50 to Qt = 30. What is government tax revenue? (in dollars)', hint: 'It&#39;s the area of a rectangle.', ans: 120, unit: '<i data-en="(enter 120)">（填 120）</i>', tol: 0,
+     ok: '<i data-en="$120. t × Qt = 4 × 30 = 120. The base is Qt, not Qe. That&#39;s the mistake students make most often here.">120 元。t × Qt = 4 × 30 = 120。注意底边是 Qt 不是 Qe，这是常错点。</i>',
+     no: 'The answer is 120: tax revenue = t × Qt = 4 × 30 = 120. Don&#39;t use Qe. Once the tax is in place, those units are never traded, so there&#39;s nothing for the government to collect.'},
+    {t: 'num', q: 'Same setup: what&#39;s the deadweight loss? (in dollars)', hint: 'Area of a triangle: ½ × base × height, where the height is the tax t.', ans: 40, unit: '<i data-en="(enter 40)">（填 40）</i>', tol: 0,
+     ok: '<i data-en="$40. ½ × t × (Qe − Qt) = ½ × 4 × 20 = 40.">40 元。½ × t × (Qe − Qt) = ½ × 4 × 20 = 40。</i>',
+     no: '<i data-en="DWL = ½ × t × (Qe − Qt) = ½ × 4 × 20 = 40. Students usually miss this in one of two ways: forgetting the ½, or subtracting (Qe − Qt) wrong.">DWL = ½ × t × (Qe − Qt) = ½ × 4 × 20 = 40。丢分通常有两个原因：忘了乘 ½，或者把 (Qe − Qt) 算错。</i>'},
+    {t: 'text', q: '为什么征税会产生无谓损失？请用"本来会发生的交易没发生"来解释，并说明什么情况下 DWL 会更大。',
+     hint: 'Those (Qe − Qt) units the tax wipes out were deals both sides wanted to make.',
+     kp: [['本来|会|原本|没发生|不发生|消失|would have|otherwise|originally|never happens|doesn&#39;t occur|disappears', '<i data-en="Every unit between Qt and Qe made both sides better off, and the tax eliminated those trades">Qt 到 Qe 之间的交易本来双方都获益，被税挤掉了</i>'],
+          ['边际收益|MB|愿付|价值|marginal benefit|MB|willingness to pay|value', 'For those units, buyers&#39; marginal benefit still exceeds sellers&#39; marginal cost'],
+          ['弹性|elastic|越有弹性|敏感|elasticity|elastic|more elastic|more responsive', '<i data-en="The more elastic D and S are, the farther quantity falls, and the larger the DWL">D 和 S 越有弹性 → 量掉得越多 → DWL 越大</i>'],
+          ['平方|t²|税率上升|squared|t²|higher tax rate', '<i data-en="DWL rises with the square of the tax, so doubling the tax quadruples the DWL">DWL 随税额的平方增长，税率翻倍 DWL 变四倍</i>']],
+     ok: '讲到位了：DWL 的本质是"互利交易被消灭"，而且抓住了弹性与 DWL 的正相关。',
+     part: '机制说对了一半。补上这句更狠的：DWL 随税额的平方上升（税率翻倍，DWL 变四倍），所以"小幅广基税"比"高税率窄基税"效率高。',
+     no: '标准表述：税楔让 Qt < Qe，被挤掉的那部分单位里，买方愿付价仍高于卖方边际成本，本来能创造剩余，现在双方都拿不到 → 社会总剩余净减少 = DWL 三角形。DWL 大小取决于量掉了多少：D、S 越有弹性，量掉越多，DWL 越大；且 DWL ∝ t²。'}
+  ]
+},
+{
+  id: 'surplus', u: 'Unit 2', name: '消费者与生产者剩余', en: 'Surplus',
+  desc: 'This is the scoring tool for every welfare question. Taxes, regulation, trade: they all run on surplus.',
+  draw: () => {
+    const D = x => 0.90 - 0.70 * x, S = x => 0.12 + 0.70 * x, pe = 0.51, qe = (0.90 - 0.51) / 0.70;
+    const fill = (x1, x2, top, bot, col) => {
+      let s = ''; const n = 30;
+      for (let i = 0; i < n; i++) {
+        const a = x1 + (x2 - x1) * i / n, b = a + (x2 - x1) / n;
+        s += `<polygon points="${X(a)},${Y(top(a))} ${X(b)},${Y(top(b))} ${X(b)},${Y(bot(b))} ${X(a)},${Y(bot(a))}" fill="${col}" opacity=".5"/>`;
+      }
+      return s;
+    };
+    return svgWrap(axes('<i data-en="Q Quantity">Q 数量</i>', '<i data-en="P Price">P 价格</i>')
+      + fill(0.02, qe, D, () => pe, C.d) + fill(0.02, qe, () => pe, S, C.s)
+      + curve(D, 0.02, 0.99, {c: C.d, w: 2.4}) + lab(0.99, D(0.99), 'D', {dx: 4, dy: -4, c: C.d, s: 13})
+      + curve(S, 0.02, 0.99, {c: C.s, w: 2.4}) + lab(0.99, S(0.99), 'S', {dx: 4, dy: -4, c: C.s, s: 13})
+      + seg(0, pe, 1, pe, {c: 'var(--ink2)', w: 1.8}) + lab(0, pe, 'Pe', {dx: -6, dy: 4, fw: 800})
+      + lab(0.30, 0.66, 'Consumer Surplus (CS)', {a: 'middle', c: '#2f5a78', s: 11.5, fw: 800})
+      + lab(0.30, 0.36, 'Producer Surplus (PS)', {a: 'middle', c: '#4e7053', s: 11.5, fw: 800})
+      + lab(qe, 0, 'Qe', {a: 'middle', dy: 15}),
+      LG([['', '<i data-en="CS = below D, above the price">CS = D 之下、价格之上</i>', C.d], ['', '<i data-en="PS = below the price, above S">PS = 价格之下、S 之上</i>', C.s]]));
+  },
+  full: '<i data-en="CS is what buyers were willing to pay minus what they actually paid: the area below the demand curve and above the price line. PS is what sellers received minus the least they&#39;d have accepted: the area below the price line and above the supply curve. Total surplus = CS + PS, and it&#39;s maximized at Qe, which is why competitive markets are efficient.">CS = 买方愿付的最高价减去实付价，图上就是 D 曲线以下、价格线以上的面积；PS = 实收价减去卖方最低接受价，是价格线以下、S 以上的面积。总剩余 = CS + PS，在 Qe 处最大 → 竞争市场有效率。</i>',
+  must: '<i data-en="D, S, the equilibrium price line, with the CS region (below D, above the price) and the PS region (below the price, above S) shaded separately">D、S、均衡价格线，并把 D 以下价格线以上（CS）、价格线以下 S 以上（PS）两块分别涂出来</i>',
+  Qs: [
+    {t: 'mc', q: 'Which area on the graph represents consumer surplus (CS)?', hint: '买方"赚到"的部分。',
+     o: ['Below the demand curve and above the price line', 'Below the price line and above the supply curve', 'Above the supply curve and above the price line', '整块需求曲线以下'], a: 0,
+     ok: 'Right. CS = willingness to pay minus price paid, so it sits between D and the price line.',
+     no: '<i data-en="CS is the area under the D curve and above the price line. The area you picked is PS. Here&#39;s a memory trick: C comes early in the alphabet and so does D, so CS hugs the D curve.">CS 是 D 曲线以下、价格线以上的那块。你选的那块是 PS。记忆法：C 在字母表前面、D 也在前面——CS 贴着 D。</i>'},
+    {t: 'mc', q: 'The price rises above Pe. What happens to consumer surplus?', hint: 'The price line moves up. How much of that area gets squeezed out?',
+     o: ['It shrinks, and what&#39;s lost turns into PS and/or deadweight loss', '增加', '不变', '全部消失'], a: 0,
+     ok: '正确。涨价把 CS 切成两块：一块转移给生产者变成 PS，一块随交易量下降变成无谓损失。这个"transfer plus disappearance"的拆法是 FRQ 高分关键。',
+     no: 'CS 一定减少。而且要说清去向：一部分转移成 PS（政府/卖方拿走），一部分因为交易量萎缩直接消失变成 DWL。只答"减少"在 FRQ 里通常只能拿一半分。'},
+    {t: 'num', q: '<i data-en="D is linear. The maximum willingness to pay is $20, equilibrium price is $8, and equilibrium quantity is 60. What is CS? (in dollars)">D 为直线，最高愿付价 20 元，均衡价 8 元，均衡量 60。CS = ?（元）</i>', hint: 'Area of a triangle.', ans: 360, unit: '<i data-en="(enter 360)">（填 360）</i>', tol: 0,
+     ok: '<i data-en="$360. ½ × (20 − 8) × 60 = 360.">360 元。½ × (20 − 8) × 60 = 360。</i>',
+     no: '<i data-en="CS = ½ × (max willingness to pay − price paid) × quantity = ½ × 12 × 60 = 360. With a linear demand curve it&#39;s always a triangle, so don&#39;t forget the ½.">CS = ½ × (最高愿付价 − 实付价) × 数量 = ½ × 12 × 60 = 360。直线 D 时永远是三角形，别忘了 ½。</i>'},
+    {t: 'text', q: '为什么说竞争均衡是"有效率的"？请用总剩余（CS + PS）的角度回答。',
+     hint: 'What happens to total surplus if we produce more or less than Qe?',
+     kp: [['最大|最大化|maximum|maximized|maximum', '<i data-en="Total surplus (CS + PS) is maximized at Qe">Qe 处总剩余 CS+PS 达到最大</i>'],
+          ['边际收益|MB|愿付|marginal benefit|MB|willingness to pay', '<i data-en="For every unit up to Qe, buyers&#39; marginal benefit is at least sellers&#39; marginal cost, so each one is worth producing">Qe 之前每一单位的买方边际收益 ≥ 卖方边际成本，都值得生产</i>'],
+          ['边际成本|MC|marginal cost|MC', 'Qe 之后 MC > MB，多生产反而减少总剩余'],
+          ['无谓损失|DWL|没有|为零|deadweight loss|DWL|none|zero', 'There&#39;s no DWL at Qe, and any departure from Qe creates one']],
+     ok: 'Textbook answer. &quot;MB = MC&quot; and &quot;total surplus is maximized&quot; are the two sentences that earn the points on an FRQ.',
+     part: 'Right direction, but you&#39;re missing the key line: at Qe, the marginal benefit of the last unit exactly equals its marginal cost (MB = MC). Past that point every extra unit costs more than it&#39;s worth, and short of it every skipped unit was worth more than it cost, so total surplus peaks right there.',
+     no: '完整答法：竞争均衡产量 Qe 上，每一单位的买方边际收益（愿付价）都 ≥ 卖方边际成本，且最后一单位 MB = MC；此时 CS + PS 之和最大，无谓损失为零。产量低于 Qe 会漏掉有价值的交易，高于 Qe 则成本超过收益，两者都让总剩余变小——这就是"配置效率"。'}
+  ]
+},
+{
+  id: 'trade', u: 'Unit 5', name: '关税与进口配额', en: 'Tariff / Quota',
+  desc: 'The small-country model: the moment the world price enters the picture, the domestic graph turns into a single horizontal line.',
+  draw: () => {
+    const D = x => 0.92 - 0.70 * x, S = x => 0.10 + 0.70 * x;
+    const pw = 0.30, pt = 0.46;
+    const qd1 = (0.92 - pw) / 0.70, qs1 = (pw - 0.10) / 0.70;
+    const qd2 = (0.92 - pt) / 0.70, qs2 = (pt - 0.10) / 0.70;
+    const fill = (x1, x2, top, bot, col) => { let s = ''; const n = 26;
+      for (let i = 0; i < n; i++) { const a = x1 + (x2 - x1) * i / n, b = a + (x2 - x1) / n;
+        s += `<polygon points="${X(a)},${Y(top(a))} ${X(b)},${Y(top(b))} ${X(b)},${Y(bot(b))} ${X(a)},${Y(bot(a))}" fill="${col}" opacity=".45"/>`; }
+      return s; };
+    return svgWrap(axes('<i data-en="Q Quantity">Q 数量</i>', '<i data-en="P Price">P 价格</i>')
+      + curve(D, 0.02, 0.99, {c: C.d}) + lab(0.99, D(0.99), 'D', {dx: 4, dy: -4, c: C.d, s: 13})
+      + curve(S, 0.02, 0.99, {c: C.s}) + lab(0.99, S(0.99), 'S', {dx: 4, dy: -4, c: C.s, s: 13})
+      + seg(0, pw, 1, pw, {c: C.m, w: 2.2, dash: 1}) + lab(0, pw, '<i data-en="Pw (world price)">Pw 世界价</i>', {dx: -6, dy: -5, c: '#3d6e8c', s: 11, fw: 800})
+      + seg(0, pt, 1, pt, {c: C.o, w: 2.2}) + lab(0, pt, 'Pw+t', {dx: -6, dy: -5, c: '#a85e30', s: 11.5, fw: 800})
+      + fill(qs2, qs1, () => pt, () => pw, C.s) + fill(qd1, qd2, () => pw, () => pt, C.d)
+      + lab(qs1 + 0.02, pw - 0.005, 'a', {a: 'middle', dy: 14, c: '#4e7053', s: 11, fw: 800})
+      + lab(qs2 - 0.02, pt - 0.005, 'b', {a: 'middle', dy: -5, c: '#4e7053', s: 11, fw: 800})
+      + lab(qd1 - 0.02, pw - 0.005, 'd', {a: 'middle', dy: 14, c: '#2f5a78', s: 11, fw: 800})
+      + lab(qd2 + 0.02, pt - 0.005, 'c', {a: 'middle', dy: -5, c: '#2f5a78', s: 11, fw: 800})
+      + lab(qs2 + (qd2 - qs2) / 2, 0.62, '关税收入', {a: 'middle', c: '#a85e30', s: 11, fw: 800})
+      + lab(0.30, 0.72, 'DWL', {a: 'middle', c: C.u, s: 11.5, fw: 800}),
+      LG([['', 'Domestic D / S', C.d], ['', 'World price, Pw', C.m], ['', 'Tariff-inclusive price, Pw + t', C.o]]));
+  },
+  full: 'A small country faces a perfectly horizontal world supply curve at Pw. Under free trade, domestic consumers buy Qd1, domestic firms produce Qs1, and imports make up the difference. A tariff t lifts the price to Pw + t: consumption falls to Qd2, domestic output rises to Qs2, and imports shrink. CS falls by areas a + b + c + d, PS gains a, the government collects tariff revenue c, and the net loss is b + d, which is the DWL.',
+  must: '<i data-en="D, S, the horizontal world price line Pw, the higher Pw + t line, the tariff-revenue rectangle, and the two DWL triangles">D、S、水平的世界价格线 Pw、抬高的 Pw+t 线，以及关税收入矩形与两块 DWL 三角形</i>',
+  Qs: [
+    {t: 'mc', q: '在一个"小国"开放经济里，世界价格 Pw 在国际市场上表现为一条什么线？', hint: 'Hint: can a small country move the world price at all?',
+     o: ['A horizontal line (perfectly elastic)', '向右上倾斜', '向右下倾斜', '垂直线'], a: 0,
+     ok: 'Exactly. A small country is a price taker on world markets. It can import as much as it wants without budging Pw, so the line is horizontal, with infinite elasticity.',
+     no: 'A horizontal line. A small country can&#39;t affect the world price, so every unit costs the same no matter the quantity: perfectly elastic. That line is ground zero for every trade question. If you can&#39;t draw it, everything after it falls apart.'},
+    {t: 'mc', q: 'After a tariff is imposed, what happens to domestic producer surplus (PS) and consumer surplus (CS)?', hint: 'Price went up. Who&#39;s happy and who&#39;s hurting?',
+     o: ['<i data-en="PS increases and CS decreases">PS 增加，CS 减少</i>', '<i data-en="PS decreases and CS increases">PS 减少，CS 增加</i>', '两者都增加', '两者都减少'], a: 0,
+     ok: 'Correct. The tariff lifts the price, so domestic sellers gain and buyers lose. And note that the CS loss is bigger than the PS gain. The gap between them is the net welfare loss to society.',
+     no: 'PS 增加、CS 减少。关税本质是国内消费者给国内生产者和政府"补贴"。关键是 CS 掉得比 PS 涨得多，多出来的那块就是无谓损失。'},
+    {t: 'num', q: '<i data-en="Pw = $10, tariff t = $2, and imports fall from 40 to 25 units once the tariff is in place. What is government tariff revenue? (in dollars)">Pw = 10，关税 t = 2，征税后进口量从 40 降到 25。政府关税收入 = ?（元）</i>', hint: '<i data-en="t times the new quantity of imports.">t × 新进口量。</i>', ans: 50, unit: '<i data-en="(enter 50)">（填 50）</i>', tol: 0,
+     ok: '<i data-en="$50. 2 × 25 = 50. Use the post-tariff import quantity, not the original 40. It&#39;s the most common mistake on this question.">50 元。2 × 25 = 50。用征税后的进口量，不是原来的 40——这是最常错的点。</i>',
+     no: 'Tariff revenue = t × post-tariff imports = 2 × 25 = 50. Don&#39;t use 40. The tariff already shrank the volume traded, and the government collects nothing on the imports that never happened.'},
+    {t: 'text', q: 'The deadweight loss from a tariff is two triangles. Tell me what each one represents: the production distortion and the consumption distortion.',
+     hint: '一块来自"国内多生产了不该生产的"，一块来自"消费者少买了本来想买的"。',
+     kp: [['生产|低效|成本高|国内多生产|production|inefficient|high cost|domestic overproduction', 'Production distortion: high-cost domestic output replaces cheap imports, wasting resources'],
+          ['消费|少买|需求|消费者减少|consumption|buy less|demand|reduced consumer purchases', 'Consumption distortion: the price hike makes consumers skip units they valued above the world price'],
+          ['两个三角|两块|b|d|two triangles|both triangles|b|d', '<i data-en="DWL = production-distortion triangle + consumption-distortion triangle">DWL = 生产扭曲三角形 + 消费扭曲三角形</i>'],
+          ['世界价|低于国内成本|进口更便宜|world price|below domestic cost|cheaper imports', 'Those replaced imports cost less than the domestic marginal cost of making them, which is why it&#39;s a loss to society']],
+     ok: 'Both triangles nailed. Production distortion plus consumption distortion is a frequent FRQ point-earner in Unit 5.',
+     part: 'You caught one; here&#39;s the other. The consumption distortion is what consumers stop buying once the price rises. Their willingness to pay for those units is still above the world price, so those are trades that should have happened.',
+     no: '<i data-en="DWL is two triangles. (1) Production distortion: the tariff brings online domestic capacity whose marginal cost is above Pw, so the country makes expensively at home what it could have imported cheaply. (2) Consumption distortion: consumers walk away from units they still value above Pw, purely because of the higher price. Together they&#39;re the net loss to society.">DWL = 两个三角形。① 生产扭曲：关税让国内边际成本高于 Pw 的产能也开工了，等于用更贵的方式造本来进口更便宜的东西；② 消费扭曲：消费者因价格抬高而放弃购买，可他们对这些单位的愿付价仍高于 Pw。两块加起来就是社会净损失。</i>'},
+    {t: 'text', q: 'How does an import quota (a quantity restriction) differ from a tariff in welfare terms? It all comes down to who collects the quota rent.',
+     hint: '关税的钱进国库，配额的钱变成"配额租金"——它落在谁口袋里？',
+     kp: [['租金|rent|配额租金|rent|quota rent', 'A quota opens a gap between the domestic and world price, and that gap is the quota rent'],
+          ['政府|拍卖|许可证收费|government|auction|license fee', 'If the government auctions import licenses, the rent goes to the government and the outcome matches a tariff'],
+          ['外国|国外生产者|出口国|国外企业|foreign|foreign producers|exporting country|foreign firms', 'If the quota is handed to foreign producers, the rent leaks abroad and the home country loses more than under an equivalent tariff'],
+          ['国内进口商|本国企业|国内|domestic importers|domestic firms|domestic', 'If licenses go to domestic importers, the rent stays home and the net loss is smaller than when it leaks abroad'],
+          ['数量|直接限制|不确定|价格|quantity|direct limit|uncertain|price', 'A quota fixes the quantity outright; a tariff only raises the price, and the import quantity then depends on elasticity']],
+     ok: 'You found the one difference that matters: who receives the quota rent determines how much the home country loses. That&#39;s a full-credit answer.',
+     part: 'Half right. One more sentence makes it perfect: tariff revenue automatically goes to the treasury, whereas quota rent goes wherever the license system sends it. That single fact is the only reason the two policies have different welfare effects.',
+     no: '核心差别在"配额租金归谁"。关税抬价，钱以税收形式进国库；配额锁量，国内价被抬到 Pq，价差形成配额租金：① 政府拍卖许可证 → 租金归政府，与关税等价；② 白送给国内进口商 → 租金留国内；③ 由外国出口商自愿限产（VER）→ 租金外流，本国净损失比等额关税还大。另外配额直接定数量，关税只定价格、数量由弹性决定。'}
+  ]
+},
+{
+  id: 'externality', u: 'Unit 6', name: '外部性', en: 'Externality',
+  desc: '市场失灵第一题。关键是分清"社会成本"和"私人成本"差在哪。',
+  draw: () => {
+    const D = x => 0.92 - 0.68 * x, S = x => 0.10 + 0.62 * x;
+    const sc = x => 0.10 + 0.62 * x + 0.24;   // MSC = MPC + 边际外部成本
+    const qm = (0.92 - 0.10 - 0.24) / (0.68 + 0.62);
+    const qo = (0.92 - 0.10) / (0.68 + 0.62);
+    return svgWrap(axes('<i data-en="Q Quantity">Q 数量</i>', '<i data-en="P Price">P 价格</i>')
+      + curve(D, 0.02, 0.99, {c: C.d, w: 2.4}) + lab(0.99, D(0.99), 'D = MPB', {dx: 4, dy: -4, c: C.d, s: 11.5})
+      + curve(S, 0.02, 0.99, {c: C.s, w: 2.4}) + lab(0.99, S(0.99), 'S = MPC', {dx: 4, dy: -4, c: C.s, s: 11.5})
+      + curve(sc, 0.02, 0.72, {c: C.u, w: 2.4}) + lab(0.72, sc(0.72), 'MSC', {dx: 5, dy: -4, c: C.u, s: 12, fw: 800})
+      + proj(qm, D(qm)) + dot(qm, D(qm), {c: C.o, r: 4}) + lab(qm, D(qm), 'Qm', {dx: 6, dy: -7, c: '#a85e30', s: 11.5, fw: 800})
+      + lab(qm, 0, 'Qm', {a: 'middle', dy: 15, c: '#a85e30', s: 11})
+      + lab(qo, 0, 'Qo', {a: 'middle', dy: 15, c: '#4e7053', s: 11})
+      + seg(qo, D(qo), qo, 0, {c: C.s, w: 1.2, dash: 1})
+      + dot(qo, D(qo), {c: '#4e7053', r: 3.4})
+      + lab(qo + 0.03, D(qo) + 0.02, '社会最优', {c: '#4e7053', s: 10.5, fw: 700})
+      + lab(qm + 0.10, 0.20, '过度生产', {c: C.u, s: 11, fw: 700})
+      + lab(qm + 0.06, (D(qm) + S(qm)) / 2 + 0.06, 'DWL', {c: C.u, s: 12, fw: 800}),
+      LG([['', '<i data-en="D = MPB (private and social benefit)">D = MPB 私人/社会收益</i>', C.d], ['', '<i data-en="S = MPC (marginal private cost)">S = MPC 私人成本</i>', C.s], ['', '<i data-en="MSC (marginal social cost)">MSC 社会成本</i>', C.u]]));
+  },
+  full: '负外部性（污染）时 MSC = MPC + 边际外部成本，高于私人成本。市场按 MPC = MPB 定在 Qm，社会最优在 MSC = MSB 的 Qo，Qm > Qo → 过度生产 + DWL。纠偏手段：庇古税 = 最优时的边际外部成本、可交易的污染许可、直接管制。',
+  must: '<i data-en="D (= MPB), S (= MPC), an MSC curve above S, with market quantity Qm, the socially optimal quantity Qo, and the DWL between them labeled">D(=MPB)、S(=MPC)、位于 S 上方的 MSC 曲线，标出 Qm 与社会最优 Qo，以及两者之间的 DWL</i>',
+  Qs: [
+    {t: 'mc', q: 'With a negative externality (say, a factory polluting a river), how does the market equilibrium quantity Qm compare with the socially optimal quantity Qo?', hint: 'Producers aren&#39;t counting the pollution cost, so do they make too much or too little?',
+     o: ['Qm > Qo，市场过度生产', 'Qm < Qo，市场生产不足', '<i data-en="Qm = Qo; the market is already efficient">Qm = Qo，市场本身有效率</i>', '无法比较'], a: 0,
+     ok: '对。私人成本低于社会成本，生产者的"账"算漏了污染代价，所以产量超过社会最优。',
+     no: 'Qm > Qo，过度生产。判断口诀：外部成本 → 生产过多；外部收益（如教育、疫苗）→ 生产过少。先判断是成本还是收益，方向自然就出来了。'},
+    {t: 'mc', q: 'Why does the MSC curve sit above the MPC curve (the S curve) in this graph?', hint: 'MSC = MPC + ?',
+     o: ['<i data-en="MSC = MPC + marginal external cost, so it&#39;s higher">MSC = MPC + 边际外部成本，所以更高</i>', '<i data-en="MSC = MPC − external cost">MSC = MPC − 外部成本</i>', '因为需求增加了', '因为政府收了税'], a: 0,
+     ok: 'Exactly. MSC = MPC + MEC (marginal external cost). The vertical gap between the two curves is the pollution cost of each unit.',
+     no: '<i data-en="MSC = MPC + MEC (marginal external cost). Firms decide based only on their own costs, while society also eats the pollution, so the social cost curve rides higher. The vertical distance between the curves is the external cost per unit.">MSC = MPC + MEC（边际外部成本）。生产者只按自己的成本决策，社会却还要承担污染，所以社会成本线更高，两条线的垂直间距 = 单位外部成本。</i>'},
+    {t: 'num', q: 'At one particular unit, MPC = $30, marginal external cost MEC = $8, and consumers are willing to pay $42. From society&#39;s perspective, should this unit be produced?', hint: 'Compute MSC = MPC + MEC first, then compare it with willingness to pay. Enter 1 if it should be produced, 0 if not.', ans: 1, unit: '<i data-en="(enter 1 to produce, 0 not to produce)">（该生产填 1，不该生产填 0）</i>', tol: 0,
+     ok: 'Produce it (enter 1). MSC = 30 + 8 = 38, which is below the $42 consumers will pay. Social benefit exceeds social cost, so this unit is worth making; it still falls inside the socially optimal quantity.',
+     no: 'The answer is 1, produce it. MSC = MPC + MEC = 30 + 8 = 38, and consumers will pay 42, so the benefit clears the social cost. The test is always MSC against social benefit, never MPC. Comparing MPC is exactly the mistake the unregulated market makes.'},
+    {t: 'text', q: 'What policy corrects this overproduction? Tell me the exact size of the Pigouvian tax, and explain why that amount does the job perfectly.',
+     hint: '让私人成本"补上"外部成本，生产者自然会减产到 Qo。',
+     kp: [['税|tax|庇古|Pigou|tax|Pigouvian tax', 'A per-unit tax on output that internalizes the external cost'],
+          ['等于|边际外部成本|MEC|外部成本|equal to|marginal external cost|MEC|external cost', 'Set the tax equal to marginal external cost at the socially optimal quantity (the vertical gap between MSC and MPC)'],
+          ['内部化|internalize|internalize|internalization', 'Firms now face the social cost and choose Qo on their own'],
+          ['许可|配额|可交易|cap and trade|排污许可证|permits|quota|tradable|cap and trade|pollution permits', 'Alternative: set a cap on total pollution and issue tradable permits'],
+          ['管制|regulation|标准|直接|regulation|command and control|standard|direct', '也可直接规定排放标准或强制安装净化设备']],
+     ok: 'Spot on. Set the tax equal to marginal external cost at Qo, and that exact number lifts MPC up to MSC, so firms cut back to Qo without being told how.',
+     part: 'Right idea, but spell out what the tax rate actually is: it&#39;s not some arbitrary number. It equals the vertical distance between MSC and MPC at Qo, so that once private cost shifts up, the MPC curve passes exactly through the socially optimal intersection.',
+     no: '三种主流做法：① 庇古税（矫正税）：税率 = 社会最优产量处的边际外部成本，也就是 MSC 与 MPC 的垂直距离，征税后企业面对的成本等于社会成本，自发减产到 Qo；② 可交易的排污许可证：设定总量上限，让市场决定价格；③ 直接管制排放标准。关键理解是"把外部成本内部化"，而不是禁绝生产。'}
+  ]
+},
+{
+  id: 'costs', u: 'Unit 4', name: '成本曲线族', en: 'Cost Curves',
+  desc: '<i data-en="MC crosses ATC and AVC at their minimum points. That one property unlocks every Unit 4 question.">MC 穿过 ATC 和 AVC 的最低点——这条性质是 Unit 4 全部题目的钥匙。</i>',
+  draw: () => {
+    // MC = 0.10 + 0.5x^2 型；ATC、AVC 为 U 形
+    const mc = x => 0.10 + 1.55 * x * x;
+    const atc = x => 0.62 - 0.75 * x + 1.05 * x * x;
+    const avc = x => 0.42 - 0.55 * x + 0.92 * x * x;
+    const xminATC = 0.357, xminAVC = 0.299;
+    return svgWrap(axes('<i data-en="Q Output">Q 产量</i>', '<i data-en="P, C Price / Cost">P, C 价格 / 成本</i>')
+      + curve(mc, 0.02, 0.90, {c: C.o, w: 2.6}) + lab(0.90, mc(0.90), 'MC', {dx: 5, dy: -2, c: '#a85e30', s: 13, fw: 800})
+      + curve(atc, 0.06, 0.90, {c: C.d, w: 2.6}) + lab(0.90, atc(0.90), 'ATC', {dx: 5, dy: -4, c: C.d, s: 12.5})
+      + curve(avc, 0.06, 0.90, {c: C.s, w: 2.4}) + lab(0.90, avc(0.90), 'AVC', {dx: 5, dy: 12, c: '#4e7053', s: 12})
+      + dot(xminATC, atc(xminATC), {c: C.d, r: 3.4}) + lab(xminATC, atc(xminATC), 'Minimum ATC', {a: 'middle', dy: -8, c: '#2f5a78', s: 10.5, fw: 700})
+      + dot(xminAVC, avc(xminAVC), {c: '#4e7053', r: 3.4}) + lab(xminAVC - 0.01, avc(xminAVC), '停业点', {a: 'end', dy: 14, dx: -3, c: '#4e7053', s: 10.5, fw: 700})
+      + lab(0.62, 0.52, '<i data-en="MC crosses both curves at their lowest points">MC 穿过两条曲线的最低点</i>', {a: 'middle', c: C.o, s: 11.5, fw: 700})
+      + lab(0.30, 0.10, '<i data-en="AFC = ATC − AVC, continuously declining">AFC = ATC − AVC，一直下降</i>', {a: 'middle', c: 'var(--ink3)', s: 10.5}),
+      LG([['', '<i data-en="MC Marginal cost">MC 边际成本</i>', C.o], ['', '<i data-en="ATC Average total cost">ATC 平均总成本</i>', C.d], ['', '<i data-en="AVC Average variable cost">AVC 平均可变成本</i>', C.s]]));
+  },
+  full: 'MC 与 ATC、AVC 都交于它们的最低点：MC < ATC 时 ATC 下降，MC > ATC 时 ATC 上升。ATC − AVC = AFC，随产量增加持续变小，所以两条线越来越近。MC 上升源于边际报酬递减（短期资本固定）。',
+  must: '<i data-en="U-shaped ATC, a U-shaped AVC below it, and MC cutting up through the minimum of both, with the minimum of AVC labeled as the shutdown point">U 形的 ATC、位于其下方的 U 形 AVC、从下方穿过这两条线最低点的 MC，并标出最低 AVC（停业点）</i>',
+  axes: ['<i data-en="Q Output">Q 产量</i>', '<i data-en="P, C Price / Cost">P, C 价格 / 成本</i>'],
+  Qs: [
+    {t: 'mc', q: '<i data-en="At what point does the MC curve intersect the ATC curve?">MC 曲线与 ATC 曲线相交于哪一点？</i>', hint: '想"边际拉平均"的道理。',
+     o: ['<i data-en="At the minimum point of ATC">ATC 的最低点</i>', '<i data-en="At the maximum point of ATC">ATC 的最高点</i>', '<i data-en="At the minimum point of AVC">AVC 的最低点</i>', '原点'], a: 0,
+     ok: 'Exactly. MC cuts up through ATC at its minimum. When MC is below average, it drags the average down; when it&#39;s above, it pulls the average up. So they can only cross at the very bottom.',
+     no: 'MC 穿过 ATC 的最低点。逻辑是"边际拉平均"：只要你这一单位的成本低于此前的平均，平均就会下降；高于平均，平均就上升。所以两者相等那一刻，平均正好触底。'},
+    {t: 'mc', q: 'Why does the short-run MC curve fall at first and then rise, giving it that U shape?', hint: 'Hint: what can&#39;t a firm change in the short run?',
+     o: ['Diminishing marginal returns: more and more variable input added to a fixed capital stock', '规模经济', '需求增加', '长期平均成本下降'], a: 0,
+     ok: 'Correct. In the short run the plant and equipment are fixed. Keep adding workers and eventually each one has less machinery to work with, so each new unit costs more to make. That&#39;s diminishing marginal returns, and it&#39;s a short-run concept only.',
+     no: '答案是边际报酬递减（短期现象）。工厂大小固定，不断加人，后来者能用的设备越来越少，新增产出越来越贵。注意别和"规模经济"混：那是长期概念，讲的是所有投入同比例变化时成本怎么变。'},
+    {t: 'mc', q: '<i data-en="What does the vertical gap between ATC and AVC represent, and what happens to it as output expands?">ATC 与 AVC 之间的垂直距离代表什么？它随产量增加怎么变？</i>', hint: 'Total cost = fixed cost + variable cost. Now divide both sides by Q. What do you get?',
+     o: ['<i data-en="AFC (average fixed cost), and it keeps getting smaller">AFC 平均固定成本，越来越小</i>', '<i data-en="AFC, and it keeps getting larger">AFC，越来越大</i>', '<i data-en="MC, falling then rising">MC，先降后升</i>', 'Economic profit, and it stays constant'], a: 0,
+     ok: 'Right. AFC = FC/Q, and as Q grows the ratio keeps shrinking. The two curves draw closer and closer together but never touch.',
+     no: '是 AFC（平均固定成本）。FC 总额不变，摊到更多单位上就越来越薄，所以 ATC 与 AVC 的间距持续收窄。这对判断"停业还是继续生产"很关键。'},
+    {t: 'num', q: 'At Q = 20, total cost is $1,000 and total variable cost is $600. What is ATC? (in dollars, whole number)', hint: 'ATC = TC ÷ Q。', ans: 50, unit: '<i data-en="(enter 50)">（填 50）</i>', tol: 0,
+     ok: '<i data-en="$50. 1,000 ÷ 20 = 50.">50 元。1000 ÷ 20 = 50。</i>',
+     no: '<i data-en="ATC = TC ÷ Q = 1,000 ÷ 20 = 50. While you&#39;re at it, check your work: AVC = 600 ÷ 20 = 30 and AFC = 20, and ATC = AVC + AFC checks out perfectly.">ATC = TC ÷ Q = 1000 ÷ 20 = 50。顺带算一下：AVC = 600 ÷ 20 = 30，AFC = 20，三者关系 ATC = AVC + AFC 正好对上，可以用来自检。</i>'},
+    {t: 'text', q: '企业短期内"该不该继续生产"的判断规则是什么？请用价格与 AVC、ATC 的关系说清楚三种情形。',
+     hint: 'Fixed cost is already paid, so it&#39;s sunk. In the short run the only question is whether revenue covers variable cost.',
+     kp: [['P < AVC|低于AVC|停产|关门|shutdown', 'P < AVC 最低点 → 停业，生产反而亏更多'],
+          ['AVC < P < ATC|之间|亏损但继续', 'AVC < P < ATC → 短期继续生产（能覆盖部分固定成本），但亏损'],
+          ['P > ATC|高于ATC|盈利|正经济利润', 'P > ATC → 赚经济利润，长期会吸引新企业进入'],
+          ['沉没|固定成本|已付出|sunk|sunk cost|fixed cost|already paid|sunk', 'Fixed cost is sunk, so it plays no part in the short-run decision'],
+          ['停业点|最低AVC|shutdown point|shutdown point|minimum AVC|shutdown point', 'The minimum of AVC is the shutdown point, and it&#39;s also where a perfectly competitive firm&#39;s short-run supply curve begins']],
+     ok: 'You separated all three cases and grounded them in sunk-cost logic. That&#39;s a full-credit FRQ answer.',
+     part: '分清了大部分，缺的是"为什么"：固定成本短期已经付出、属于沉没成本，所以只要价格还能覆盖 AVC，继续生产就比停业少亏一点。',
+     no: '规则以最低 AVC（停业点）为界：① P < AVC → 立即停业，因为多生产多亏（连可变成本都收不回）；② AVC < P < ATC → 短期继续生产，虽然亏，但收入覆盖了全部可变成本和一部分固定成本，比关门少亏；③ P > ATC → 有经济利润，长期会吸引进入。核心是固定成本属于沉没成本，不应影响短期决策。'}
+  ]
+},
+{
+  id: 'pc', u: 'Unit 4', name: '完全竞争企业', en: 'Perfect Competition',
+  desc: 'Price taker: a horizontal demand curve where P = MR = AR.',
+  draw: () => {
+    const mc = x => 0.12 + 1.5 * (x - 0.52) * (x - 0.52) * 1.6 + 0.35 * x;
+    const atc = x => 0.66 - 0.6 * x + 0.85 * x * x;
+    const p = 0.60;
+    const qStar = 0.665;
+    return svgWrap(axes('<i data-en="Q Output">Q 产量</i>', '<i data-en="P Price / Cost">P 价格 / 成本</i>')
+      + seg(0, p, 1, p, {c: C.d, w: 2.8}) + lab(1, p, 'P = MR = AR = D', {dx: -2, dy: -6, a: 'end', c: '#2f5a78', s: 11.5, fw: 800})
+      + curve(mc, 0.03, 0.95, {c: C.o, w: 2.5}) + lab(0.95, mc(0.95), 'MC', {dx: 4, dy: -3, c: '#a85e30', s: 12.5, fw: 800})
+      + curve(atc, 0.06, 0.95, {c: C.s, w: 2.4}) + lab(0.95, atc(0.95), 'ATC', {dx: 4, dy: 12, c: '#4e7053', s: 12})
+      + dot(qStar, p, {c: C.u, r: 4.2}) + proj(qStar, p)
+      + lab(qStar, 0, 'Q*', {a: 'middle', dy: 15, c: '#a85e30', s: 11.5, fw: 800})
+      + lab(qStar + 0.02, p, '<i data-en="Where MR = MC">MR = MC 处</i>', {dy: -8, c: '#a85e30', s: 10.5, fw: 700})
+      + lab(0.20, 0.84, '价格线之上有经济利润', {a: 'middle', c: '#2f5a78', s: 11, fw: 700})
+      + lab(0.20, 0.22, 'P > ATC 部分 = 利润', {a: 'middle', c: C.u, s: 10.5}),
+      LG([['', 'Horizontal demand, P = MR', C.d], ['', 'MC', C.o], ['', 'ATC', C.s]]));
+  },
+  full: '完全竞争企业是价格接受者，面对水平需求线，P = MR = AR。利润最大化取 MR = MC 的产量 Q*。图中 P > ATC → 短期有经济利润；长期新企业进入，供给增加把价格压到 ATC 最低点，经济利润归零（只剩正常利润）。',
+  must: 'A horizontal price line at P = MR = D, U-shaped MC, U-shaped ATC, and Q* determined where MR = MC',
+  Qs: [
+    {t: 'mc', q: 'Why is a perfectly competitive firm&#39;s demand curve a horizontal line?', hint: 'Hint: how big is one firm compared with the whole market?',
+     o: ['The firm is too small to move the market price, so it takes P as given', '因为产品有差异', '因为政府定价', '因为边际成本不变'], a: 0,
+     ok: 'Exactly. Countless small firms selling an identical product means no single firm&#39;s output can move the price. It&#39;s a price taker, facing perfectly elastic demand.',
+     no: 'Because it&#39;s a price taker. With huge numbers of buyers and sellers and a completely homogeneous product, one firm&#39;s share is tiny. It can sell all it wants at the market price, and raise the price by a penny and it sells nothing. Hence a horizontal demand curve.'},
+    {t: 'mc', q: 'Which two curves intersect to determine this firm&#39;s profit-maximizing quantity?', hint: 'One rule works for every market structure.',
+     o: ['<i data-en="Where MR intersects MC">MR 与 MC 的交点</i>', '<i data-en="Where D intersects ATC">D 与 ATC 的交点</i>', '<i data-en="Where MC intersects ATC">MC 与 ATC 的交点</i>', '<i data-en="Where MR intersects AVC">MR 与 AVC 的交点</i>'], a: 0,
+     ok: 'Correct. MR = MC is the profit-maximizing rule in every market structure, not just perfect competition.',
+     no: 'MR = MC。这是贯穿整门课的通用规则，垄断、垄断竞争也一样用。完全竞争的特殊之处只是 MR 恰好等于 P，所以看起来是"the price line crossing MC"。'},
+    {t: 'text', q: '图中有经济利润，长期会发生什么？请写出从"利润"到"利润归零"的完整传导链。',
+     hint: 'Who&#39;s drawn in by economic profit? Once they arrive, what happens to market supply? And then to price?',
+     kp: [['进入|新企业|厂商进入|enter|entry|new firms|firms enter|enter', '经济利润吸引新企业进入该行业'],
+          ['供给增加|右移|市场供给|supply increases|shifts right|market supply', '市场供给曲线右移'],
+          ['价格下降|下跌|降低|price falls|drops|decreases', '供给增加把市场价格压下来'],
+          ['零经济利润|正常利润|归零|为零|zero economic profit|normal profit|drives to zero|equals zero', 'Price falls to the minimum of ATC, economic profit = 0 (only normal profit remains)'],
+          ['退出|亏损|exit|exit|losses|exit', 'With short-run losses it runs in reverse: firms exit, supply shifts left, and price climbs back to breakeven']],
+     ok: 'Clean chain: profit → entry → supply shifts right → price falls → economic profit gone. That&#39;s why long-run equilibrium can only sit at the minimum of ATC.',
+     part: 'Right direction, but you&#39;re missing a link in the middle. Fill it in: new entry shifts the industry supply curve right, which drives price down, and economic profit doesn&#39;t disappear until price lands exactly on the minimum of ATC.',
+     no: '完整链条：短期 P > ATC → 有经济利润 → 吸引新企业进入 → 行业供给右移 → 市场价格下降 → 每家企业利润被摊薄 → 直到 P = ATC 最低点，经济利润 = 0，进入停止。反向同理（亏损→退出→价格回升）。所以长期均衡必然落在 ATC 最低点，这也是"完全竞争有效率"的依据。'}
+  ]
+},
+{
+  id: 'monopoly', u: 'Unit 4', name: '垄断定价', en: 'Monopoly',
+  desc: '<i data-en="MR sits below D, and pricing happens in two steps. This is the single graph where Unit 4 students lose the most points.">MR 在 D 下方，两步定价。Unit 4 最容易丢分的一张图。</i>',
+  draw: () => {
+    const D = x => 0.92 - 0.72 * x;
+    const MR = x => 0.92 - 1.44 * x;
+    const mc = x => 0.14 + 0.9 * x * x * 1.1 + 0.10 * x;
+    const atc = x => 0.70 - 0.5 * x + 0.6 * x * x;
+    const qm = 0.435, pm = D(qm), atmc = atc(qm);
+    return svgWrap(axes('<i data-en="Q Output">Q 产量</i>', '<i data-en="P Price / Cost">P 价格 / 成本</i>')
+      + curve(D, 0.02, 0.99, {c: C.d, w: 2.6}) + lab(0.99, D(0.99), 'D = AR', {dx: 4, dy: -4, c: C.d, s: 12})
+      + curve(MR, 0.02, 0.64, {c: C.o, w: 2.6}) + lab(0.64, MR(0.64), 'MR', {dx: 5, dy: -2, c: '#a85e30', s: 13, fw: 800})
+      + curve(mc, 0.02, 0.95, {c: C.s, w: 2.4}) + lab(0.95, mc(0.95), 'MC', {dx: 4, dy: -3, c: '#4e7053', s: 12.5, fw: 800})
+      + curve(atc, 0.05, 0.95, {c: '#a06b9e', w: 2}) + lab(0.95, atc(0.95), 'ATC', {dx: 4, dy: 12, c: '#a06b9e', s: 11.5})
+      + proj(qm, pm) + dot(qm, pm, {c: C.u, r: 4.2}) + lab(qm, pm, 'Pm', {dx: 6, dy: -7, c: C.u, s: 12.5, fw: 800})
+      + dot(qm, atmc, {c: '#a06b9e', r: 3.4}) + lab(qm, atmc, 'ATC', {dx: 6, dy: 13, c: '#a06b9e', s: 11, fw: 700})
+      + lab(qm, 0, 'Qm', {a: 'middle', dy: 15, c: '#a85e30', s: 11.5, fw: 800})
+      + seg(0, atmc, qm, atmc, {c: '#a06b9e', w: 1.2, dash: 1})
+      + lab(qm * 0.45, (pm + atmc) / 2, '经济利润', {a: 'middle', c: '#8c5c8c', s: 11, fw: 800})
+      + lab(0.72, 0.16, '<i data-en="MR = MC sets the quantity">MR = MC 定数量</i>', {c: '#a85e30', s: 10.5, fw: 700})
+      + lab(0.66, 0.09, 'then go up to D to read the price', {c: C.u, s: 10.5, fw: 700}),
+      LG([['', '<i data-en="D = AR (demand)">D = AR 需求</i>', C.d], ['', '<i data-en="MR Marginal revenue">MR 边际收益</i>', C.o], ['', 'MC', C.s], ['', 'ATC', '#a06b9e']]));
+  },
+  full: '垄断者面对整条市场需求曲线，要多卖就得全线降价，所以 MR 始终在 D 下方且斜率约为 D 的两倍（线性需求时）。定价分两步：先用 MR = MC 定 Qm，再从 Qm 垂直上抬到需求曲线读出 Pm。Pm > MC → 产量低于社会最优 → 无谓损失，且长期可维持经济利润（有进入壁垒）。垄断没有稳定的供给曲线。',
+  must: '<i data-en="D, a steeper MR below D, U-shaped MC, U-shaped ATC; mark output where MR = MC first, then go straight up to D to read Pm, and shade the profit rectangle">D、位于 D 下方且更陡的 MR、U 形 MC、U 形 ATC；先标 MR=MC 的产量，再上抬到 D 读出 Pm，并画出利润矩形</i>',
+  Qs: [
+    {t: 'mc', q: 'Why does a monopolist&#39;s marginal revenue curve lie below its demand curve D?', hint: '想"To sell one more unit, what does she have to do to every unit she was already selling"。',
+     o: ['She has to cut price to sell more, and that cut applies to all the earlier units too, so marginal revenue comes in below the price', '因为有固定成本', 'Because MC is rising', '因为有政府管制'], a: 0,
+     ok: '对，这就是 MR < P 的根本原因。多卖一单位带来 +P，但要让之前所有单位都降价，损失一部分收入，净增少于 P。',
+     no: 'Because selling more means cutting price, and the cut doesn&#39;t just apply to the new unit; every unit sold before it now brings in less too. So the net gain from one more unit (MR) is always below its selling price P. With linear demand, MR is exactly twice as steep as D.'},
+    {t: 'mc', q: 'What&#39;s the correct sequence for finding a monopolist&#39;s price?', hint: 'Two steps, and the order is everything.',
+     o: ['First find MR = MC to set quantity, then go straight up from that quantity to D to read the price', 'Set the price first, then see how much sells', 'Find where D intersects MC', 'Set price at the minimum of ATC'], a: 0,
+     ok: 'Correct. This single step costs more AP points than any other. Plenty of students read the height of the MR = MC intersection as the price, which treats MR as if it were D and badly understates the price.',
+     no: 'Two steps: (1) MR = MC gives quantity Qm; (2) go straight up from Qm to the demand curve, and that height is Pm. The classic mistake is calling the height of the MR = MC intersection the price. That point is marginal revenue, not the selling price.'},
+    {t: 'mc', q: 'Which area on the graph shows a monopolist&#39;s economic profit?', hint: 'Profit = (P − ATC) × Q.',
+     o: ['<i data-en="The rectangle with height (Pm − ATC) and width Qm">(Pm − ATC) × Qm 的矩形</i>', '(Pm − MC) × Qm', '½ × (Pm − ATC) × Qm', '<i data-en="The triangle between MR and MC">MR 与 MC 之间的三角形</i>'], a: 0,
+     ok: 'Right, it&#39;s a rectangle: profit per unit times units sold. And it&#39;s ATC, not MC. Cost always means average total cost here.',
+     no: 'Profit = (Pm − ATC) × Qm, a rectangle. Using MC is wrong because cost has to be measured as average total cost per unit. Rectangle, not triangle: that&#39;s another spot students routinely slip up.'},
+    {t: 'text', q: 'Compared with perfect competition, how does a monopoly differ on price, quantity, and efficiency? And why does deadweight loss result?',
+     hint: 'P 与 MC 的关系是关键：竞争市场 P = MC，垄断 P > MC。',
+     kp: [['价格更高|价高|Pm 高|higher price|Pm is higher', '垄断价格高于竞争价格'],
+          ['产量更低|量少|Qm 小|lower output|smaller quantity|Qm is lower', 'A monopolist produces less than a competitive market (which produces where P = MC)'],
+          ['P > MC|价格大于边际成本', 'Price exceeds marginal cost; the monopoly charges a markup'],
+          ['无谓损失|DWL|死重|净损失|deadweight loss|DWL|net welfare loss', '<i data-en="Every unit between Qm and Qc would have made both sides better off, but none of it gets traded, so DWL results">Qm 到 Qc 之间的交易本可互利却未发生 → DWL</i>'],
+          ['进入壁垒|barrier|专利|特许|barriers to entry|barrier|patent|franchise', '进入壁垒使长期经济利润不被竞争侵蚀']],
+     ok: 'You hit price, quantity, and efficiency, then added barriers to entry on top. Complete answer.',
+     part: 'Right direction, but you&#39;re missing the key mechanism sentence: a monopolist&#39;s price is above MC, so between Qm and the competitive quantity, consumers&#39; willingness to pay still exceeds marginal cost. Those trades should have happened, and abandoning them is the deadweight loss.',
+     no: '对照三点：① 价格更高；② 产量更低；③ 存在无谓损失、配置无效率。机制在于垄断者按 MR = MC 生产，而 MR < P，所以均衡时 P > MC——消费者对这些未生产单位的愿付价高于生产成本，互利交易被放弃，形成 DWL。另外垄断有进入壁垒（专利、特许、规模经济），所以长期能保住经济利润；也不存在稳定的供给曲线。'},
+    {t: 'text', q: 'What can the government do to reduce the inefficiency of a monopoly, and what&#39;s the downside of each? Give at least two.',
+     hint: '一是管价格，二是引入竞争，三是把它们变成"准竞争"。',
+     kp: [['价格管制|最高限价|管价格|regulate|price regulation|price ceiling|regulate price|regulate', 'Impose a price ceiling, either at P = MC or P = ATC'],
+          ['边际成本定价|MC 定价|有效|marginal-cost pricing|MC pricing|efficient', '按 P = MC 定价可达到配置效率，但自然垄断时 MC < ATC 会亏损，需补贴'],
+          ['平均成本定价|ATC 定价|公平回报|average-cost pricing|ATC pricing|fair-return pricing', 'Pricing at P = ATC keeps the firm whole, but a small DWL remains'],
+          ['反垄断|反托拉斯|拆分|antitrust|antitrust|breakup|antitrust enforcement', 'Antitrust law breaks up firms or blocks mergers and cartels'],
+          ['公有|国有|政府经营|public ownership|state-owned|government-run', 'Government operation, common for utilities'],
+          ['特许招标|竞争进入|放松管制|franchise bidding|contestable entry|deregulation', '引入潜在竞争或特许经营权竞标']],
+     ok: 'You laid out more than two tools and gave the tradeoff on each. That&#39;s a full-credit response.',
+     part: 'You&#39;ve got one tool. Add the other one and its cost: pricing at P = MC is allocatively efficient, but for a natural monopoly MC stays below ATC, so the firm runs a loss and needs a government subsidy. The fallback is P = ATC (fair-return pricing), which keeps the firm solvent but leaves a small deadweight loss.',
+     no: 'The usual toolkit: (1) Price regulation. P = MC achieves allocative efficiency, but in a natural monopoly MC stays below ATC in the long run, so the firm loses money and needs a subsidy. Fall back to P = ATC (fair-return pricing) and the firm breaks even, though a small DWL lingers. (2) Antitrust enforcement: break up firms, ban collusion, block anti-competitive mergers. (3) Public ownership of utilities. (4) Pro-competition reforms such as franchise bidding and deregulated entry. Every option carries a cost: regulation can dull the incentive to innovate, and subsidies have to be financed, which creates distortions of their own.'}
+  ]
+},
+{
+  id: 'labor', u: 'Unit 4', name: '劳动力市场', en: 'Labor Market',
+  desc: 'Factor markets are the mirror image of product markets: swap demand for MRP and price for the wage.',
+  draw: () => {
+    const D = x => 0.90 - 0.62 * x, S = x => 0.12 + 0.66 * x;
+    const mw = 0.58, qd = (0.90 - mw) / 0.62, qs = (mw - 0.12) / 0.66;
+    return svgWrap(axes('<i data-en="L Quantity of labor">L 劳动量</i>', '<i data-en="W Wage rate">W 工资率</i>')
+      + curve(D, 0.02, 0.99, {c: C.d, w: 2.6}) + lab(0.99, D(0.99), 'D = MRP', {dx: 4, dy: -4, c: C.d, s: 12})
+      + curve(S, 0.02, 0.99, {c: C.s, w: 2.6}) + lab(0.99, S(0.99), 'S', {dx: 4, dy: -4, c: C.s, s: 13})
+      + proj(0.545, 0.56) + dot(0.545, 0.56, {c: 'var(--ink)', r: 4}) + lab(0.545, 0.56, 'E', {dx: 7, dy: -6, fw: 800})
+      + lab(0.545, 0, 'Le', {a: 'middle', dy: 15}) + lab(0, 0.56, 'We', {dx: -6, dy: 4, fw: 700})
+      + seg(0, mw, 1, mw, {c: C.o, w: 2.3, dash: 1}) + lab(0, mw, '最低工资', {dx: -6, dy: -6, c: '#a85e30', s: 11.5, fw: 800})
+      + dot(qd, mw, {c: C.o, r: 3.6}) + dot(qs, mw, {c: C.o, r: 3.6})
+      + lab(qd, mw, 'Ld', {a: 'middle', dy: -7, c: '#a85e30', s: 11})
+      + lab(qs, mw, 'Ls', {a: 'middle', dy: -7, c: '#a85e30', s: 11})
+      + `<g stroke="${C.u}" stroke-width="2" stroke-dasharray="4 3"><line x1="${X(qd)}" y1="${Y(mw) - 5}" x2="${X(qs)}" y2="${Y(mw) - 5}"/></g>`
+      + lab((qd + qs) / 2, mw, '失业', {a: 'middle', dy: -9, c: C.u, s: 12, fw: 800}),
+      LG([['', '<i data-en="D = MRP (demand for labor)">D = MRP 劳动需求</i>', C.d], ['', '<i data-en="S Supply of labor">S 劳动供给</i>', C.s], ['', '最低工资', C.o]]));
+  },
+  full: 'The demand for labor is driven by marginal revenue product (MRP = MP × P) and slopes down because of diminishing marginal returns. Firms hire up to the point where the wage equals MRP. A minimum wage above We creates a surplus of labor, which is unemployment. A monopsony (a single employer) pushes both the wage and employment below competitive levels.',
+  must: 'Downward-sloping D = MRP, upward-sloping S, equilibrium at (We, Le), a minimum wage line above We, and the unemployment gap marked as Ls − Ld',
+  axes: ['<i data-en="L Quantity of labor">L 劳动量</i>', '<i data-en="W Wage rate">W 工资率</i>'],
+  Qs: [
+    {t: 'mc', q: 'What&#39;s on the horizontal axis and the vertical axis in this graph?', hint: 'In a factor market, the axes get renamed after the factor itself.',
+     o: ['Horizontal axis L (quantity of labor), vertical axis W (wage rate)', 'Horizontal axis Q (output), vertical axis P (price)', 'Horizontal axis L, vertical axis MC', 'Horizontal axis time, vertical axis wage'], a: 0,
+     ok: '对。要素市场把"数量"换成要素量（劳动 L），把"价格"换成要素价格（工资 W），其余逻辑和商品市场完全一样。',
+     no: 'Horizontal axis is the quantity of labor L (workers or hours), vertical axis is the wage rate W. A factor market is just the product market with Q replaced by L and P replaced by W. The graph logic carries over one for one.'},
+    {t: 'mc', q: 'Why does the demand curve for labor slope downward?', hint: 'Hint: if you keep hiring, does each new worker add as much output as the last one?',
+     o: ['Diminishing marginal returns: each additional worker adds less extra output than the one before', '工人越招越贵是因为工会', '因为工资在下降', '因为产品需求增加'], a: 0,
+     ok: 'Correct. MP falls, so MRP = MP × P falls with it, and firms will only add workers at a lower wage.',
+     no: 'Because of diminishing marginal returns. The most a firm will pay a worker is that worker&#39;s MRP (marginal product × the product&#39;s price). Add more workers and MP drops, so MRP drops with it, and the firm only hires more if the wage comes down.'},
+    {t: 'mc', q: 'The price of the product rises. What happens to the demand curve for labor?', hint: '<i data-en="MRP = MP × P. So what happens when P goes up?">MRP = MP × P，P 变了会怎样？</i>',
+     o: ['It shifts right, because MRP rises', 'It shifts left, because MRP falls', 'No change; only a wage change moves it', '变成水平线'], a: 0,
+     ok: 'Exactly. A higher product price raises every worker&#39;s MRP, so at any given wage firms want more workers. The labor demand curve shifts right, and both the wage and employment rise.',
+     no: 'Shifts right. MRP = MP × product price, so a higher product price lifts MRP across the board and firms want more workers at every wage. Same rule as always: change anything other than the wage and the whole curve shifts; change the wage itself and you move along the curve.'},
+    {t: 'text', q: 'The minimum wage is raised above We. How do you show the amount of unemployment on the graph, and which workers get hit hardest?',
+     hint: 'Start with the gap between Ls and Ld, then think about who&#39;s easiest to replace.',
+     kp: [['<i data-en="Ls − Ld|供给减需求|差|过剩|surplus|Ls minus Ld|supply less demand|gap|surplus|surplus">Ls − Ld|供给减需求|差|过剩|surplus</i>', 'Unemployment = Ls − Ld at the minimum wage (the surplus of labor)'],
+          ['青少年|年轻|低技能|经验少|teen|teenagers|young|low-skill|inexperienced|teen', '青少年和低技能工人受冲击最大'],
+          ['替代|机器|自动化|substitute|substitution|machines|automation|substitute', 'Once the wage is forced up, firms substitute capital and machinery for low-skill labor'],
+          ['弹性|elastic|elasticity|elastic', 'If labor demand is inelastic, the employment loss is smaller']],
+     ok: 'You covered both: how to measure it on the graph and who it hits. Nicely done.',
+     part: '失业的量说清了，但"谁受影响最大"要补：青少年、低技能、缺乏经验的工人，因为他们的边际产量低，工资被抬到其 MRP 之上后最先被替代。',
+     no: 'Two points. (1) Unemployment equals Ls − Ld at the minimum wage, i.e., the surplus of labor. (2) The impact falls on teenagers, low-skill, and inexperienced workers: their MRP is low, the minimum wage can sit above it, and firms swap them for machines or more experienced workers. One aside that earns extra credit: if labor demand is inelastic, the actual job loss is smaller, and that&#39;s where the academic debate lives.'},
+    {t: 'text', q: 'What is a monopsony? Compared with a perfectly competitive labor market, how does it affect the wage and the number of workers hired?',
+     hint: 'With a single employer, hiring one more worker means raising pay for everyone, so the marginal cost of hiring runs above the wage.',
+     kp: [['唯一雇主|单一买方|只有一家|only one|sole employer|single buyer|only one firm|only one', 'A monopsony is a labor market with one and only one employer buying labor'],
+          ['<i data-en="wage lower|below We|depresses wages|wage 更低|工资低"> wage 更低|工资低|低于 We|压低工资</i>', 'It pays a wage below the competitive wage We'],
+          ['雇佣更少|就业少|量低|低于 Le|hires fewer|lower employment|below Le', 'It also hires fewer workers than the competitive equilibrium Le'],
+          ['<i data-en="MFC|边际要素成本|高于工资|MEC|MFC|marginal factor cost|above the wage|MEC">MFC|边际要素成本|高于工资|MEC</i>', 'Hiring one more means raising everyone&#39;s pay, so marginal factor cost exceeds the wage rate'],
+          ['最低工资|提高就业|可增加|minimum wage|raises employment|can increase', '适度的最低工资在买方垄断下反而可能同时提高工资和就业']],
+     ok: 'You&#39;ve got both the lower wage and the lower employment, plus the reason why. Full credit.',
+     part: 'Right direction. Now add the mechanism: a monopsonist hiring one more worker has to raise pay for its current workers too, so marginal factor cost (MFC) sits above the wage rate. It hires where MFC = MRP, then pays the lowest wage the labor supply curve allows, and the result is a wage and employment level both below the competitive outcome.',
+     no: 'A monopsony is a labor market with a single employer, like the only factory in a small town. Here&#39;s the mechanism: hiring one more worker requires raising wages for all of them, so marginal factor cost (MFC) is above the wage rate. The firm hires where MFC = MRP, then pays the minimum wage the labor supply curve will tolerate. Compared with a competitive market, the wage is lower, fewer workers are hired, and deadweight loss results. The interesting twist: set a moderate minimum wage in a monopsony and you can raise both the wage and employment at once.'}
+  ]
+},
+{
+  id: 'ppc', u: 'Unit 1', name: '生产可能性曲线', en: 'PPC / PPF',
+  desc: 'The most basic graph on the exam and one of the most tested: what do points on, inside, and outside the curve each mean?',
+  draw: () => {
+    const ppc = x => 0.88 * Math.pow(1 - Math.pow(x / 0.95, 1.6), 1/1.6) + 0.06;
+    return svgWrap(axes('Quantity of capital goods', 'Quantity of consumer goods')
+      + curve(ppc, 0.01, 0.95, {c: C.d, w: 2.8})
+      + lab(0.95, 0.14, 'PPC', {dx: 5, dy: 0, c: C.d, s: 13, fw: 800})
+      + dot(0.45, ppc(0.45), {c: C.s, r: 4.4}) + lab(0.45, ppc(0.45), '<i data-en="A Efficient">A 有效率</i>', {a: 'middle', dy: -9, c: '#4e7053', s: 11, fw: 700})
+      + dot(0.24, 0.22, {c: C.o, r: 4.4}) + lab(0.24, 0.22, '<i data-en="B Inside the curve: unemployment / inefficiency">B 曲线内：失业/低效</i>', {dx: 7, dy: -2, c: '#a85e30', s: 10.5, fw: 700})
+      + dot(0.72, 0.80, {c: C.u, r: 4.4}) + lab(0.72, 0.80, '<i data-en="C Outside the curve: unattainable for now">C 曲线外：当前不可达</i>', {a: 'end', dx: -6, dy: -4, c: C.u, s: 10.5, fw: 700})
+      + lab(0.66, 0.30, 'Moving along the curve = increasing opportunity cost', {a: 'middle', c: 'var(--ink2)', s: 10.5, fw: 600})
+      + lab(0.30, 0.62, 'Outward shift = economic growth', {a: 'middle', c: '#2f5a78', s: 11, fw: 700}),
+      LG([['', '<i data-en="PPC Frontier">PPC 边界</i>', C.d], ['', '有效率', C.s], ['', 'Inefficient / unattainable', C.o]]));
+  },
+  full: '<i data-en="A point on the PPC (A) means full employment and efficient use of resources. A point inside (B) means unemployment or misallocated resources. A point outside (C) can&#39;t be reached with current resources and technology. A PPC bowed out from the origin signals increasing opportunity cost, because resources aren&#39;t equally suited to both goods. An outward shift of the whole curve is economic growth, driven by more resources or better technology.">PPC 上的点（A）= 资源充分就业且有效率；曲线内的点（B）= 有失业或资源配置低效；曲线外的点（C）= 现有资源与技术下达不到。曲线凹向原点 → 机会成本递增（资源不完全适配两种生产）。曲线整体外移 = 经济增长（资源增加或技术进步）。</i>',
+  must: 'A PPC bowed out from the origin, with one point labeled on the curve, one inside it, and one outside to show what each means',
+  axes: ['Quantity of capital goods', 'Quantity of consumer goods'],
+  Qs: [
+    {t: 'mc', q: 'What does point B, inside the curve, tell you about the economy?', hint: 'With the same resources, this economy could be producing more.',
+     o: ['存在失业或资源使用低效', '无法实现', '有效率但产量太低', '经济在增长'], a: 0,
+     ok: 'Exactly. At B, some resources are sitting idle or being used in the wrong place. The economy could move out to the curve without giving up a single unit of anything.',
+     no: '<i data-en="B means unemployment or inefficiency: resources aren&#39;t fully employed, so output of both goods can rise, with no trade-off at all, until the economy is back on the curve.">B 表示失业或低效：资源没被充分利用，所以可以在不减少任何一种产品的前提下增产，直到回到曲线上。</i>'},
+    {t: 'mc', q: '<i data-en="Why is the PPC usually drawn bowed out from the origin?">PPC 为什么通常画成凹向原点（bowed out）的形状？</i>', hint: 'Hint: if you convert wheat-only farmland to apples, is the first acre as good at it as the last acre?',
+     o: ['Resources aren&#39;t equally suited to both uses, so opportunity cost rises', '因为技术是固定的', '因为存在失业', '因为两种商品价格相同'], a: 0,
+     ok: '正确。资源有专门用途，越往后转用的资源越"不合适"，为多产一单位消费品要放弃的资本品越来越多 → 机会成本递增 → 曲线越来越陡。',
+     no: '因为机会成本递增。资源各有专长，先把最适合产消费品的资源调过去，代价很小；越往后越要动用"专门产资本品"的资源，牺牲越来越大，曲线就越陡，形成凹形。'},
+    {t: 'num', q: 'An economy can produce either 40 units of consumer goods or 20 units of capital goods with all its resources, and its PPC is a straight line. What is the opportunity cost of 1 more unit of capital goods, in consumer goods?', hint: 'A straight-line PPC means constant opportunity cost, so just set up the ratio.', ans: 2, unit: '<i data-en="(enter 2)">（填 2）</i>', tol: 0.05,
+     ok: '<i data-en="2 units of consumer goods. 40 ÷ 20 = 2. A straight-line PPC means opportunity cost is identical at every point.">2 单位消费品。40 ÷ 20 = 2，直线 PPC 意味着机会成本处处相同。</i>',
+     no: 'The answer is 2. Since 40 consumer goods trade off against 20 capital goods, 1 capital good costs 2 consumer goods. Heads up: this only works because the PPC is a straight line, which means constant opportunity cost. The moment the curve bows out, opportunity cost changes along it and this simple ratio no longer applies.'},
+    {t: 'mc', q: 'Which of the following shifts the entire PPC outward?', hint: '能让"最大可能产量"变大的东西。',
+     o: ['技术进步或资源总量增加', '失业率下降', '从曲线内的点移到曲线上', '消费品价格上升'], a: 0,
+     ok: '对。只有生产能力本身提升（更多资源、更好技术）才让曲线外移；从 B 移到 A 只是"用满已有能力"，曲线不动。',
+     no: 'Only technological progress or more resources shift the PPC outward; that&#39;s economic growth. Falling unemployment, or moving from B to A, just puts capacity you already had to full use, and the curve stays put. AP tests this distinction every single year.'},
+    {t: 'text', q: 'Point C is out of reach right now. What could make it attainable? Give at least two ways, and for each one, its cost or the condition it depends on.',
+     hint: 'Two routes: push the frontier out yourself, or trade with someone else.',
+     kp: [['技术|科技进步|technology|technology|technological progress|technology', 'Technological progress raises productivity and shifts the PPC out'],
+          ['资源|劳动力|资本|资本品投资|增加|resources|labor|capital|investment in capital goods|increase', 'More resources (new discoveries, labor-force growth, capital built through investment) shift the PPC out'],
+          ['贸易|专业化|比较优势|交换|进口|trade|specialization|comparative advantage|exchange|imports', 'Specialization and trade let a country consume a bundle beyond its own PPC'],
+          ['教育|人力资本|human capital|education|human capital|human capital', 'Education and training build human capital, a classic source of long-run growth'],
+          ['牺牲当前消费|放弃|机会成本|投资|forgo current consumption|give up|opportunity cost|investment', 'Making more capital goods means giving up consumer goods today. That&#39;s the price of shifting the curve out']],
+     ok: 'You named both routes, pushing the frontier out from within and breaking through it via trade. That&#39;s the complete answer.',
+     part: 'One of the two is right. The other matters just as much: through specialization and trade, a country can consume beyond its own PPC without its productive capacity growing at all.',
+     no: '两条路径：① 让 PPC 自己外移——技术进步、资源增加、人力资本提升（教育）、资本积累；代价是要牺牲当前消费去多产资本品，即"先吃苦后享受"。② 不必移动 PPC——通过专业化和国际贸易，各国按比较优势生产再交换，就能消费到本国 PPC 之外的组合。这也是支持自由贸易的核心论据。'}
+  ]
+}
+];
+/* ============================================================
+   三、状态与存储
+   ============================================================ */
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem('apmicro_' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('apmicro_' + k, JSON.stringify(v)); } catch (e) {} }
+};
+let CFG = LS.get('cfg', { key: '', base: '', model: 'gpt-4o-mini', name: '同学' });
+let WB = LS.get('wb', []);          // 错题本
+let DONE = LS.get('done', {});      // 每张图的最好成绩
+
+const $ = s => document.querySelector(s);
+const app = $('#app');
+let S = null;   // 当前会话
+
+/* ============================================================
+   四、判定引擎（本地规则 · 第一层）
+   ============================================================ */
+const norm = s => (s || '').toString().trim().toLowerCase()
+  .replace(/\s+/g, '').replace(/[，。、；;：:！!？?（）()【】\[\]"'']/g, '');
+
+// 选择题
+function judgeMC(q, pick) {
+  if (pick == null) return null;
+  const ok = pick === q.a;
+  return { level: ok ? 'ok' : 'no', score: ok ? 1 : 0,
+    text: ok ? q.ok : q.no,
+    fix: ok ? '' : `<b>正确选项：</b>${q.o[q.a]}` };
+}
+// 数字题
+function judgeNUM(q, raw) {
+  if (raw === '' || raw == null) return null;
+  const v = parseFloat(raw);
+  if (isNaN(v)) return { level: 'no', score: 0, text: 'This one needs a number, and I didn&#39;t get a valid one. Want to give it another try?', fix: 'Just type the digits, no units needed.' };
+  const good = Math.abs(v - q.ans) <= (q.tol || 0);
+  if (good) return { level: 'ok', score: 1, text: q.ok };
+  // 常见错误诊断
+  let diag = '';
+  const a = q.ans;
+  if (Math.abs(v - a * 2) < 1e-6 || Math.abs(v - a / 2) < 1e-6) diag = '看起来像是<b>三角形/矩形面积公式混了</b>——带 ½ 的是三角形（DWL、CS、PS），不带 ½ 的是矩形（税收收入、利润）。';
+  else if (Math.abs(v + a) < 1e-6) diag = 'The number&#39;s right but the sign&#39;s backwards. Double-check whether the question wants an absolute value or a direction.';
+  else if (v > a && v < a * 1.6) diag = '偏大了。检查一下是不是用了<b>变化前的数量</b>（Qe）而不是变化后的量——税、配额、管制题都要用变化后的量。';
+  return { level: 'no', score: 0, text: q.no, fix: (diag ? diag + '<br>' : '') + `<b>正确答案是 ${a}</b>（你填了 ${v}）。` };
+}
+// 开放题：本地关键词层
+function judgeTEXT(q, raw) {
+  const t = (raw || '').trim();
+  if (!t) return null;
+  const n = norm(t);
+  let hit = 0; const missing = [];
+  for (const [re, label] of q.kp) {
+    if (new RegExp(re, 'i').test(n) || new RegExp(re, 'i').test(t)) hit++; else missing.push(label);
+  }
+  const total = q.kp.length, ratio = hit / total;
+  const missHTML = missing.length ? `<b>还缺这几个得分点：</b><ul>${missing.map(m => `<li>${m}</li>`).join('')}</ul>` : '';
+  if (ratio >= 0.75) return { level: 'ok', score: 1, text: q.ok + `<br><span style="color:var(--ink3);font-size:12.5px">（本地要点命中 ${hit}/${total}）</span>`, fix: '' };
+  if (ratio >= 0.4) return { level: 'part', score: 0.5, text: q.part, fix: missHTML };
+  return { level: 'no', score: 0, text: q.no, fix: missHTML };
+}
+
+/* ============================================================
+   五、AI 判定（第二层 · 可选）
+   ============================================================ */
+const SYS = `你是一名 AP Microeconomics（AP 微观经济）的辅导老师，正在批改一名中国高中生的英文/中文作答。
+要求：
+1. 先给判定：correct / partial / incorrect 三选一。
+2. 指出她答对的部分（如果有），再精确定位错误点：是概念错了、逻辑链断在哪一环、还是漏了得分点。
+3. 给出该问的标准答案要点（bullet，2-4 条），措辞贴近 AP 官方评分标准的得分句风格。
+4. 如果她的表述里有 AP 术语用错（比如把 shift 说成 movement along、把 MPC 说成 MSC），单独点出来。
+5. 语气像耐心的老师，不要打击，中文回复，控制在 220 字以内。
+严格按这个 JSON 格式输出，不要输出任何其他内容：
+{"level":"correct|partial|incorrect","right":"她答对的部分","wrong":"错误点定位","points":["标准要点1","标准要点2"],"term":"Terminology reminder (leave blank if none)"}`;
+
+async function aiJudge(graph, qi, q, raw) {
+  if (!CFG.key) return null;
+  const prev = (S.answers[qi] && S.answers[qi].fb) ? S.answers[qi].fb.text : '';
+  const user = `题目（第${qi + 1}问）：${q.q}
+题目提示：${q.hint || '无'}
+该图的核心结论（供你参照，不要直接照抄给学生）：${graph.full}
+学生作答：${raw}
+${prev ? 'Here&#39;s the feedback you got when you first tried it (just for reference; feel free to revise):' + prev : ''}
+请批改。`;
+  const headers = { 'Content-Type': 'application/json' };
+  if (CFG.base && CFG.base.includes('anthropic')) {
+    const r = await fetch(CFG.base.replace(/\/$/, '') + '/messages', {
+      method: 'POST', headers: { ...headers, 'x-api-key': CFG.key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: CFG.model || 'claude-3-5-haiku-latest', max_tokens: 600, system: SYS, messages: [{ role: 'user', content: user }] })
+    });
+    const j = await r.json();
+    const txt = (j.content || []).map(c => c.text || '').join('');
+    return parseAI(txt);
+  }
+  const url = (CFG.base ? CFG.base.replace(/\/$/, '') : 'https://api.openai.com/v1') + '/chat/completions';
+  const r = await fetch(url, {
+    method: 'POST', headers: { ...headers, 'Authorization': 'Bearer ' + CFG.key },
+    body: JSON.stringify({ model: CFG.model || 'gpt-4o-mini', temperature: 0.3,
+      messages: [{ role: 'system', content: SYS }, { role: 'user', content: user }] })
+  });
+  const j = await r.json();
+  const txt = j.choices ? (j.choices[0].message.content || '') : '';
+  return parseAI(txt);
+}
+function parseAI(txt) {
+  try {
+    const m = txt.match(/\{[\s\S]*\}/);
+    const o = JSON.parse(m[0]);
+    const lv = o.level === 'correct' ? 'ok' : (o.level === 'partial' ? 'part' : 'no');
+    let html = `<div class="fh"><span class="ic">${lv === 'ok' ? '✓' : lv === 'part' ? '~' : '✕'}</span>AI 逐点批改</div>`;
+    if (o.right) html += `<div><b style="color:#4e7053">答对的部分：</b>${o.right}</div>`;
+    if (o.wrong) html += `<div style="margin-top:5px"><b style="color:#a85e30">问题出在哪：</b>${o.wrong}</div>`;
+    if (o.points && o.points.length) html += `<div style="margin-top:5px"><b>标准得分点：</b><ul>${o.points.map(p => `<li>${p}</li>`).join('')}</ul></div>`;
+    if (o.term) html += `<div class="fix"><b>术语提醒：</b>${o.term}</div>`;
+    return { level: lv, html };
+  } catch (e) {
+    return { level: 'ai', html: `<div class="fh"><span class="ic">i</span>AI 反馈</div>${(txt || '').replace(/</g, '&lt;').slice(0, 600)}` };
+  }
+}
+
+/* ============================================================
+   六、读图模式
+   ============================================================ */
+function startRead(id) {
+  const g = GRAPHS.find(x => x.id === id);
+  S = { mode: 'read', g, qi: 0, answers: [], drawing: null };
+  renderQ();
+}
+function renderQ() {
+  const g = S.g, i = S.qi, q = g.Qs[i];
+  const total = g.Qs.length;
+  const pct = Math.round(S.answers.filter(a => a && a.fb).length / total * 100);
+  let body = `
+  <div class="card">
+    <div class="card-h">
+      <span class="tag">${g.u}</span>
+      <span class="tag o">读图模式</span>
+      <span class="sub">第 ${i + 1} / ${total} 问</span>
+      <span style="flex:1"></span>
+      <button class="hbtn sm" onclick="backHome()">退出</button>
+    </div>
+    <div class="card-b">
+      <h2 class="title">${g.name} <span style="font-size:13px;color:var(--ink3);font-weight:600">${g.en}</span></h2>
+      <p class="sub">${g.desc}</p>
+    </div>
+    ${g.draw()}
+  </div>
+
+  <div class="card">
+    <div class="card-b">
+      <div class="prog"><div class="bar"><i style="width:${pct}%"></i></div><span class="txt">${pct}%</span></div>
+      <div class="qhead">
+        <div class="qnum ${S.answers[i] && S.answers[i].fb ? (S.answers[i].fb.level === 'ok' ? 'done' : 'warn') : ''}">${i + 1}</div>
+        <div class="qtext">${q.q}</div>
+      </div><div class="langsw" id="langsw" data-tip="中文 / 双语 / English"><button data-l="cn" onclick="setLang('cn')">中文</button><button data-l="both" class="on" onclick="setLang('both')">双语</button><button data-l="en" onclick="setLang('en')">EN</button></div>
+      ${q.hint ? `<div class="qhint">💡 ${q.hint}</div>` : ''}
+      <div id="area">${inputHTML(q, i)}</div>
+      <div id="fb">${S.answers[i] && S.answers[i].fb ? fbHTML(S.answers[i].fb) : ''}</div>
+    </div>
+  </div>`;
+  app.innerHTML = body;
+  bindInput(q, i);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function inputHTML(q, i) {
+  const saved = S.answers[i] ? S.answers[i].raw : null;
+  const locked = S.answers[i] && S.answers[i].fb;
+  if (q.t === 'mc') {
+    return `<div class="opts">${q.o.map((o, k) =>
+      `<button class="opt ${saved === k ? 'sel' : ''} ${locked ? 'dis' : ''}" ${locked ? 'disabled' : ''} onclick="pickMC(${k})"><b>${'ABCD'[k]}</b>${o}</button>`).join('')}</div>`;
+  }
+  if (q.t === 'num') {
+    return `<div class="inline"><input id="nin" type="number" step="any" inputmode="decimal" placeholder="输入数字" value="${saved != null ? saved : ''}" ${locked ? 'disabled' : ''}/>
+      <span class="unit">${q.unit || ''}</span>
+      <button class="btn sm" onclick="submitNum()" ${locked ? 'disabled' : ''}>提交</button></div>`;
+  }
+  return `<textarea class="ta" id="tin" placeholder="Put it in your own words, and don&#39;t worry if it&#39;s not complete. This is exactly how I can show you where the gap is." ${locked ? 'disabled' : ''}>${saved != null ? saved : ''}</textarea>
+    <div class="row" style="margin-left:32px;margin-top:8px">
+      <button class="btn" onclick="submitText(false)" ${locked ? 'disabled' : ''}>提交，先看本地判定</button>
+      ${CFG.key ? `<button class="btn gh" onclick="submitText(true)" ${locked ? 'disabled' : ''}>提交并让 AI 逐点批改</button>` : ''}
+    </div>`;
+}
+function bindInput(q, i) {
+  const tin = $('#tin');
+  if (tin && !tin.disabled) {
+    tin.addEventListener('input', () => {
+      const a = S.answers[i] || (S.answers[i] = {});
+      a.raw = tin.value;
+    });
+    tin.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submitText(false);
+    });
+    setTimeout(() => { try { tin.focus(); } catch (e) {} }, 60);
+  }
+  const nin = $('#nin');
+  if (nin && !nin.disabled) {
+    nin.addEventListener('keydown', e => { if (e.key === 'Enter') submitNum(); });
+    setTimeout(() => { try { nin.focus(); } catch (e) {} }, 60);
+  }
+}
+function fbHTML(f) {
+  if (f.html) return `<div class="fb ${f.level}">${f.html}</div>`;
+  const cls = { ok: 'ok', no: 'no', part: 'part' }[f.level] || 'no';
+  const ic = { ok: '✓', no: '✕', part: '~' }[f.level] || '?';
+  const tt = { ok: '答对了', no: '这里有问题', part: '部分正确' }[f.level] || '';
+  return `<div class="fb ${cls}"><div class="fh"><span class="ic">${ic}</span>${tt}</div>${f.text}${f.fix ? `<div class="fix">${f.fix}</div>` : ''}</div>`;
+}
+// —— 交互 ——
+function pickMC(k) {
+  const q = S.g.Qs[S.qi];
+  S.answers[S.qi] = { raw: k, fb: judgeMC(q, k) };
+  afterAnswer();
+}
+function submitNum() {
+  const q = S.g.Qs[S.qi], v = $('#nin').value.trim();
+  if (v === '') return;
+  S.answers[S.qi] = { raw: v, fb: judgeNUM(q, v) };
+  afterAnswer();
+}
+async function submitText(useAI) {
+  const q = S.g.Qs[S.qi], v = $('#tin').value.trim();
+  if (!v) return;
+  const local = judgeTEXT(q, v);
+  S.answers[S.qi] = { raw: v, fb: local };
+  if (useAI) {
+    $('#fb').innerHTML = `<div class="fb ai"><div class="fh"><span class="ic"><span class="spin"></span></span>AI 正在批改…</div>正在比对你写的每一句和得分要点，几秒钟。</div>`;
+    $('#area').querySelectorAll('button,.ta').forEach(b => b.disabled = true);
+    const ai = await aiJudge(S.g, S.qi, q, v);
+    if (ai) { S.answers[S.qi].fb = ai; S.answers[S.qi].ai = true; }
+    afterAnswer();
+    return;
+  }
+  afterAnswer();
+}
+function afterAnswer() {
+  const a = S.answers[S.qi];
+  if (a.fb && a.fb.level !== 'ok') {
+    WB.push({ gid: S.g.id, gname: S.g.name, u: S.g.u, qi: S.qi, q: S.g.Qs[S.qi].q, raw: a.raw, fb: a.fb, t: Date.now() });
+    LS.set('wb', WB); paintWBNum();
+  }
+  const q = S.g.Qs[S.qi];
+  const right = a.fb && a.fb.level === 'ok';
+  const extra = (q.t === 'text' && a.fb && a.fb.level !== 'ok' && !a.ai && CFG.key)
+    ? `<button class="btn gh sm" onclick="retryAI()">让 AI 再细看一遍我的答案</button>` : '';
+  const nav = `<div class="row" style="margin-top:12px">
+      ${S.qi < S.g.Qs.length - 1
+        ? `<button class="btn" onclick="nextQ()"><i data-en="Next question →">下一问 →</i></button>`
+        : `<button class="btn" onclick="finish()"><i data-en="Finish this graph →">完成这张图 →</i></button>`}
+      ${extra}
+    </div>`;
+  const host = $('#fb');
+  host.innerHTML = fbHTML(a.fb) + nav;
+  if (a.fb.level === 'ok') host.querySelector('.fb').insertAdjacentHTML('beforeend', '');
+  const opts = $('#area').querySelectorAll('.opt');
+  if (opts.length) {
+    opts.forEach((b, k) => {
+      b.disabled = true; b.classList.add('dis');
+      if (k === q.a) b.classList.add('ok');
+      if (k === a.raw && k !== q.a) b.classList.add('no');
+    });
+  }
+}
+async function retryAI() {
+  const q = S.g.Qs[S.qi], a = S.answers[S.qi];
+  $('#fb').innerHTML = `<div class="fb ai"><div class="fh"><span class="ic"><span class="spin"></span></span>AI 正在批改…</div>逐点比对中。</div>`;
+  const ai = await aiJudge(S.g, S.qi, q, a.raw);
+  if (ai) { a.fb = ai; a.ai = true;
+    const last = WB[WB.length - 1];
+    if (last && last.qi === S.qi && last.gid === S.g.id) { last.fb = ai; LS.set('wb', WB); }
+    $('#fb').innerHTML = fbHTML(ai) + `<div class="row" style="margin-top:12px"><button class="btn" onclick="${S.qi < S.g.Qs.length - 1 ? 'nextQ()' : 'finish()'}">${S.qi < S.g.Qs.length - 1 ? 'Next question →' : 'Finish this graph →'}</button></div>`;
+  }
+}
+function nextQ() { S.qi++; renderQ(); }
+
+/* ============================================================
+   七、默画模式（画布）
+   ============================================================ */
+const TOOLS = [
+  { k: 'D', n: 'Demand curve D', c: C.d, kind: 'line' },
+  { k: 'S', n: 'Supply curve S', c: C.s, kind: 'line' },
+  { k: 'MR', n: 'Marginal revenue MR', c: C.o, kind: 'line' },
+  { k: 'MC', n: 'Marginal cost MC', c: '#a85e30', kind: 'line' },
+  { k: 'ATC', n: 'Average total cost ATC', c: '#a06b9e', kind: 'cu' },
+  { k: 'AVC', n: 'Average variable cost AVC', c: '#6f9bb5', kind: 'cu' },
+  { k: 'EQ', n: '标均衡点', c: 'var(--ink)', kind: 'pt' }
+];
+function startDraw(id) {
+  const g = GRAPHS.find(x => x.id === id);
+  S = { mode: 'draw', g, tool: 'D', strokes: {}, eq: null, dragging: false, checked: null };
+  renderDraw();
+}
+function renderDraw() {
+  const g = S.g;
+  const canvas = drawCanvas();
+  app.innerHTML = `
+  <div class="card">
+    <div class="card-h">
+      <span class="tag">${g.u}</span><span class="tag g">默画模式</span>
+      <span class="sub">合上书本，从空白坐标轴开始</span>
+      <span style="flex:1"></span>
+      <button class="hbtn sm" onclick="backHome()">退出</button>
+    </div>
+    <div class="card-b">
+      <h2 class="title">默画：${g.name}</h2>
+      <p class="sub">先选左边的工具，再在坐标系里画。画完点"检查我的图"。</p>
+    </div>
+    ${canvas}
+    <div class="card-b">
+      <div class="hintbar">🎯 <b>本图必须出现的元素：</b>${g.must || 'Demand curve D, supply curve S, equilibrium point E (with dashed lines to both axes)'}</div>
+      <div style="height:10px"></div>
+      <div class="tools">
+        ${TOOLS.map(t => `<button class="tool ${S.tool === t.k ? 'on' : ''}" onclick="setTool('${t.k}')"><span class="sw" style="background:${t.c}"></span>${t.n}</button>`).join('')}
+        <button class="tool" onclick="undoStroke()">↩ 撤销上一笔</button>
+        <button class="tool" onclick="clearAll()">🗑 清空重画</button>
+      </div>
+      <div class="row" style="margin-left:32px;margin-top:11px">
+        <button class="btn" onclick="checkDraw()"><i data-en="Check my graph">检查我的图</i></button>
+        <button class="btn gy" onclick="peekDraw()">画不出来了，看答案</button>
+      </div>
+      <div id="dfb">${S.checked ? fbHTML(S.checked) : ''}</div>
+    </div>
+  </div>`;
+  bindCanvas();
+}
+function drawCanvas() {
+  let inner = axes(S.g.axes || ('<i data-en="Q Quantity">Q 数量</i>', '<i data-en="P Price">P 价格</i>')[0], (S.g.axes || ('<i data-en="Q Quantity">Q 数量</i>', '<i data-en="P Price">P 价格</i>'))[1]);
+  for (const k in S.strokes) {
+    const st = S.strokes[k], t = TOOLS.find(x => x.k === k);
+    if (!t || !st.pts.length) continue;
+    if (t.kind === 'pt') inner += dot(st.pts[0].x, st.pts[0].y, { c: t.c, r: 5 }) + proj(st.pts[0].x, st.pts[0].y, { c: t.c });
+    else inner += poly(st.pts.map(p => [p.x, p.y]), { c: t.c, w: 2.8 });
+    const last = st.pts[st.pts.length - 1];
+    inner += lab(last.x, last.y, k, { dx: 6, dy: -4, c: t.c, s: 12, fw: 800 });
+  }
+  return `<div class="graphbox"><svg id="cv" viewBox="0 0 ${VB.w} ${VB.h}" xmlns="http://www.w3.org/2000/svg">${inner}</svg></div>`;
+}
+function setTool(k) { S.tool = k; S.checked = null; renderDraw(); }
+function undoStroke() { S.dragging = false; delete S.strokes[S.tool]; S.checked = null; renderDraw(); }
+function clearAll() { S.dragging = false; S.strokes = {}; S.checked = null; renderDraw(); }
+function bindCanvas() {
+  const cv = $('#cv'); if (!cv) return;
+  cv.style.touchAction = 'none';
+  const myEvent = e => S && S.mode === 'draw' && e.target && e.target.closest && e.target.closest('#cv');
+  const toN = e => {
+    const r = cv.getBoundingClientRect();
+    const cx = e.clientX - r.left, cy = e.clientY - r.top;
+    return { x: Math.max(0, Math.min(1, (cx / r.width) * VB.w - P.l) / (P.r - P.l)),
+             y: Math.max(0, Math.min(1, (cy / r.height) * VB.h - P.t) / (P.b - P.t)) };
+  };
+  // 监听挂 window：画布每次重绘都会换节点，挂画布上会丢 mousedown
+  window.addEventListener('pointerdown', e => {
+    if (!myEvent(e) || S.dragging) return;
+    e.preventDefault();
+    S.strokes[S.tool] = { pts: [toN(e)] };
+    if (TOOLS.find(x => x.k === S.tool).kind === 'pt') { S.dragging = false; finishStroke(); return; }
+    paintLive();
+  });
+  window.addEventListener('pointermove', e => {
+    if (S.mode !== 'draw') return;
+    if (!S.dragging) { if (e.buttons !== 1) return; S.dragging = true; }   // 防御：down 被吞时自愈
+    e.preventDefault();
+    const st = S.strokes[S.tool]; if (!st) return;
+    const p = toN(e), last = st.pts[st.pts.length - 1];
+    if (Math.abs(p.x - last.x) < 0.008 && Math.abs(p.y - last.y) < 0.008) return;
+    st.pts.push(p);
+    paintLive();
+  });
+  const finishStroke = () => {
+    S.dragging = false;
+    const t = TOOLS.find(x => x.k === S.tool);
+    if (t.kind !== 'pt' && S.strokes[S.tool] && S.strokes[S.tool].pts.length < 2) delete S.strokes[S.tool];
+    S.checked = null;
+    if (S.mode === 'draw') paintLive();
+  };
+  window.addEventListener('pointerup', () => { if (S.dragging) finishStroke(); });
+  window.addEventListener('pointercancel', () => { if (S.dragging) finishStroke(); });
+}
+
+function paintLive() {
+  const cv = $('#cv'); if (!cv) return;
+  // 整段重绘（实测增量追加折线在真实 Chrome 里仍会丢笔画，这里以稳为准）
+  let inner = drawBase();
+  for (const k in S.strokes) {
+    const st = S.strokes[k], t = TOOLS.find(x => x.k === k);
+    if (!t || !st.pts.length) continue;
+    if (t.kind === 'pt') inner += dot(st.pts[0].x, st.pts[0].y, { c: t.c, r: 5 }) + proj(st.pts[0].x, st.pts[0].y, { c: t.c });
+    else inner += poly(st.pts.map(q => [q.x, q.y]), { c: t.c, w: 2.8 });
+    const last = st.pts[st.pts.length - 1];
+    inner += lab(last.x, last.y, k, { dx: 6, dy: -4, c: t.c, s: 12, fw: 800 });
+  }
+  cv.innerHTML = inner;
+}
+function tagLive() { /* 已并入 paintLive */ }
+
+function drawBase() {
+  return axes('<i data-en="Q Quantity">Q 数量</i>', '<i data-en="P Price">P 价格</i>')
+    + `<g stroke="var(--ink3)" stroke-width="1" stroke-dasharray="2 4" opacity=".5">
+       <line x1="${P.l}" y1="${P.t}" x2="${P.l}" y2="${P.b}"/><line x1="${P.l}" y1="${P.b}" x2="${P.r}" y2="${P.b}"/></g>`;
+}
+// 判定默画：形状启发式
+function checkDraw() {
+  const msgs = [], miss = [];
+  const D = S.strokes.D, Ss = S.strokes.S, MR = S.strokes.MR, MC = S.strokes.MC;
+  const slope = st => { if (!st || st.pts.length < 3) return null;
+    const a = st.pts[0], b = st.pts[st.pts.length - 1];
+    return (b.y - a.y) / (b.x - a.x || 1e-6); };
+  const span = st => !st || st.pts.length < 3 ? 0 : Math.abs(st.pts[st.pts.length - 1].x - st.pts[0].x);
+
+  if (!D || D.pts.length < 3) miss.push('Demand curve D (sloping down to the right)');
+  else { const m = slope(D); if (m >= 0) msgs.push(`你画的 D 是${m > 0 ? '向右上' : '水平'}的——需求曲线必须<b><i data-en="Downward sloping">向右下倾斜</i></b>（边际效用递减）。`); }
+  if (!Ss || Ss.pts.length < 3) miss.push('Supply curve S (sloping up to the right)');
+  else { const m = slope(Ss); if (m <= 0) msgs.push(`你画的 S 是${m < 0 ? '向右下' : '水平'}的——供给曲线必须<b><i data-en="Upward sloping">向右上倾斜</i></b>（边际成本递增）。`); }
+  if (D && D.pts.length > 2 && Ss && Ss.pts.length > 2) {
+    const dx = Math.abs(D.pts[0].x - Ss.pts[0].x), dy = Math.abs(D.pts[0].y - Ss.pts[0].y);
+    if (dx < 0.03 && dy < 0.03) msgs.push('D 和 S 的起点几乎重合了，两条线要分开画，它们的<b>交点</b>才是均衡。');
+  }
+  if (['monopoly', 'pc'].includes(S.g.id)) {
+    if (!MR || MR.pts.length < 3) miss.push('Marginal revenue MR');
+    else { const md = slope(D), mr = slope(MR);
+      if (md != null && Math.abs(mr) <= Math.abs(md) * 1.3) msgs.push('MR 应该比 D <b>更陡</b>（线性需求时斜率是 D 的两倍），并且整条在 D 的下方。'); }
+  }
+  if (['costs', 'monopoly', 'pc'].includes(S.g.id)) {
+    if (!MC || MC.pts.length < 3) miss.push('Marginal cost MC');
+    if (!S.strokes.ATC || S.strokes.ATC.pts.length < 3) miss.push('Average total cost ATC');
+  }
+  if (!S.strokes.EQ && !['costs'].includes(S.g.id)) miss.push('Equilibrium point (don&#39;t forget to label it and drop dashed lines to both axes)');
+  else if (S.strokes.EQ && D && Ss) {
+    const p = S.strokes.EQ.pts[0];
+    const near = (st) => st.pts.some(q => Math.abs(q.x - p.x) < 0.06 && Math.abs(q.y - p.y) < 0.06);
+    if (!near(D) || !near(Ss)) msgs.push('你标的均衡点<b>没有落在 D 与 S 的交点上</b>——均衡必须同时满足两条线。');
+  }
+  if (S.g.id === 'costs' && MC && S.strokes.ATC) {
+    msgs.push('检查一件事：<b>MC 是否穿过 ATC 的最低点</b>？这是这张图唯一的硬标准，你可以在答案图里核对。');
+  }
+  let html = '';
+  if (!miss.length && !msgs.length) {
+    html = `<div class="fb ok"><div class="fh"><span class="ic">✓</span>结构检查通过</div>
+      轴的走向、曲线斜率、交点位置都对上了。<br><div class="fix"><b>下一步：</b>把笔放下，用嘴讲一遍——"Why D slopes down, why S slopes up, and why their intersection is equilibrium"。讲不顺的地方记下来，那才是真漏洞。</div></div>
+      <div class="row" style="margin-top:11px"><button class="btn gh" onclick="peekDraw()">和标准图对一下细节</button></div>`;
+  } else {
+    html = `<div class="fb no"><div class="fh"><span class="ic">✕</span>结构检查：${miss.length + msgs.length} 处要改</div>
+      ${miss.length ? `<b>还缺这些元素：</b><ul>${miss.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
+      ${msgs.length ? `<b>形状/逻辑问题：</b><ul>${msgs.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
+      <div class="fix">别急着看答案，先按上面改一轮再检查一次。真卡住了再点"画不出来了"。</div></div>`;
+  }
+  S.checked = { html };
+  renderDraw();
+}
+function peekDraw() {
+  const g = S.g;
+  app.innerHTML = `
+  <div class="card"><div class="card-h"><span class="tag">${g.u}</span><span class="tag o">答案对照</span>
+    <span style="flex:1"></span><button class="hbtn sm" onclick="renderDraw()">← 回去接着画</button></div>
+    <div class="card-b"><h2 class="title">${g.name} · 标准图</h2>
+    <p class="sub">对照时只做一件事：<b>找出你刚才画错的那一条线</b>，然后关掉重画一遍。看一遍不算会。</p></div>
+    ${g.draw()}
+    <div class="card-b"><div class="hintbar">${g.full}</div>
+    <div class="row" style="margin-top:11px"><button class="btn" onclick="clearAll();renderDraw()">关掉，我重画一遍</button></div></div></div>`;
+}
+
+/* ============================================================
+   八、首屏 / 结算 / 错题本 / 设置
+   ============================================================ */
+function home() {
+  const st = LS.get('done', {});
+  app.innerHTML = `
+  <div class="hero">
+    <h2>今天练哪张图？</h2>
+    <p>每张图 4–5 问，从"轴是什么"一路问到"why the curves are drawn this way and what happens when an exogenous variable changes"。答错当场告诉你错在哪一环。</p>
+  </div>
+  <div class="modes">
+    <div class="mode on" id="m-read" onclick="setMode('read')">
+      <b>① 读图模式</b><span>给完整图，逐步追问。<br>练"Read → Explain → Predict"。</span></div>
+    <div class="mode" id="m-draw" onclick="setMode('draw')">
+      <b>② 默画模式</b><span>空白坐标轴，自己画。<br>练考试要的"产出"能力。</span></div>
+  </div>
+  <div id="glist"></div>`;
+  setMode(S && S.mode === 'draw' ? 'draw' : 'read', true);
+}
+let MODE = 'read';
+function setMode(m, silent) {
+  MODE = m;
+  ['read', 'draw'].forEach(k => { const el = $('#m-' + k); if (el) el.classList.toggle('on', k === m); });
+  const st = LS.get('done', {});
+  $('#glist').innerHTML = `<div class="glist">${GRAPHS.map(g => {
+    const r = st[g.id];
+    const badge = r ? (r.score >= r.total * 0.8 ? '<span class="badge b-ok">已掌握</span>'
+                                                : `<span class="badge b-no">${r.score}/${r.total}</span>`)
+                    : '<span class="badge b-new">未练</span>';
+    return `<div class="gitem" onclick="${m === 'read' ? `startRead('${g.id}')` : `startDraw('${g.id}')`}">
+      <div class="u">${g.u}</div><div class="n">${g.name}</div><div class="d">${g.desc}</div>${badge}</div>`;
+  }).join('')}</div>`;
+  $('#hsub').textContent = m === 'read' ? 'Study Mode · 12 core graphs · step-by-step follow-ups' : 'Draw-From-Scratch Mode · start with blank axes and build it yourself';
+}
+function backHome() { S = null; home(); window.scrollTo({ top: 0 }); }
+
+function finish() {
+  const g = S.g;
+  const total = g.Qs.length;
+  let score = 0; const miss = [];
+  S.answers.forEach((a, i) => {
+    if (!a || !a.fb) return;
+    score += a.fb.level === 'ok' ? 1 : (a.fb.level === 'part' ? 0.5 : 0);
+    if (a.fb.level !== 'ok') miss.push({ i, q: g.Qs[i].q, fb: a.fb });
+  });
+  const rate = score / total;
+  const old = LS.get('done', {});
+  if (!old[g.id] || score > old[g.id].score) old[g.id] = { score, total, t: Date.now() };
+  LS.set('done', old);
+  const lvl = rate >= 0.9 ? ['Locked in. This graph is yours.', 'ok']
+            : rate >= 0.6 ? ['The skeleton&#39;s there, just a few details still slipping', 'part']
+            : ['This one hasn&#39;t clicked yet. Come back tomorrow for another round.', 'no'];
+  app.innerHTML = `
+  <div class="card"><div class="card-h"><span class="tag">${g.u}</span><span class="tag g">完成</span></div>
+    <div class="card-b"><div class="result">
+      <div class="score">${score}<small> / ${total}</small></div>
+      <div class="lvl" style="color:var(--${lvl[1] === 'ok' ? 'green' : lvl[1] === 'part' ? 'orange' : 'red'})">${lvl[0]}</div>
+      ${miss.length ? `<div class="misslist">${miss.map(m =>
+        `<div class="m"><b>第 ${m.i + 1} 问</b> ${m.q}<br>${stripTags(m.fb.text || '').slice(0, 90)}…</div>`).join('')}</div>`
+        : '<div class="misslist"><div class="m" style="background:var(--green-l)"><b style="color:#4e7053">全对。</b>去默画模式把这张图从空白画一遍，能画出来才算真的会。</div></div>'}
+      <div class="row" style="margin-top:14px;justify-content:center">
+        <button class="btn gh" onclick="startRead('${g.id}')">再做一轮</button>
+        <button class="btn" onclick="startDraw('${g.id}')">去默画这张图 →</button>
+        <button class="btn gy" onclick="backHome()">换一张</button>
+      </div>
+    </div></div></div>`;
+  window.scrollTo({ top: 0 });
+}
+function stripTags(s) { return (s || '').replace(/<[^>]+>/g, ''); }
+
+function openWB() {
+  const groups = {};
+  WB.forEach(w => { (groups[w.gid] = groups[w.gid] || []).push(w); });
+  const body = WB.length ? Object.keys(groups).map(gid => {
+    const g = GRAPHS.find(x => x.id === gid), list = groups[gid];
+    return `<div class="wbg">${g.u} · ${g.name}（${list.length}）</div>` + list.slice().reverse().map(w => {
+      const i = WB.indexOf(w);
+      return `<div class="wbi"><div class="q">Q${w.qi + 1}. ${w.q}</div>
+        <div class="a"><b>你写的：</b>${stripTags(String(w.raw)) || '<i data-en="(no answer yet)">（未作答）</i>'}</div>
+        <div class="a">${stripTags(w.fb.text || w.fb.html || '').slice(0, 200)}</div>
+        <div class="meta"><span>${new Date(w.t).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+          <span><button class="del" onclick="retryWB(${i})">重做</button> · <button class="del" onclick="delWB(${i})">删掉</button></span></div></div>`;
+    }).join('');
+  }).join('') : '<div class="wbempty">还没有错题。<br>答错的第一时间会自动收进来，攒一段时间你就能看出她反复栽在同一个节点上。</div>';
+  modal(`错题本 · ${WB.length} 题`, body, `<button class="btn gy sm" onclick="clearWB()">清空错题本</button>`);
+}
+function delWB(i) { WB.splice(i, 1); LS.set('wb', WB); paintWBNum(); openWB(); }
+function clearWB() { if (confirm('Clear every missed question?')) { WB = []; LS.set('wb', WB); paintWBNum(); openWB(); } }
+function retryWB(i) {
+  const w = WB[i]; closeModal();
+  startRead(w.gid);            // 重建干净会话，避免污染当前进度
+  S.qi = w.qi;
+  S.answers[w.qi] = null;      // 清掉这一问的旧答案，允许重答
+  renderQ();
+}
+function paintWBNum() { const e = $('#wbnum'); if (e) e.textContent = WB.length ? ' ' + WB.length : ''; }
+
+function openSet() {
+  modal('Settings · AI point-by-point grading', `
+    <p class="sub" style="margin:0 0 12px">本地判定不联网就能用；填上 API Key 之后，开放题会多一层 AI 逐点批改——它会指出你哪句对、哪句逻辑断了、漏了哪个得分点。</p>
+    <div class="note" style="margin-bottom:12px"><b>关于 Key 的安全：</b>它只存在你这台设备的浏览器里，请求由浏览器直接发往你填的接口地址，不经过任何第三方服务器。用公共电脑就别填。</div>
+    <div class="field"><label>接口地址 Base URL</label>
+      <input id="s-base" placeholder="https://api.openai.com/v1" value="${CFG.base || ''}"/>
+      <div class="h">OpenAI 官方留空即可；用中转就填中转地址（要带 /v1）。Anthropic 填 https://api.anthropic.com</div></div>
+    <div class="field"><label>API Key</label>
+      <input id="s-key" type="password" placeholder="sk-..." value="${CFG.key || ''}"/>
+      <div class="h">留空 = 只用本地判定，软件功能完整。</div></div>
+    <div class="field"><label>模型名</label>
+      <input id="s-model" placeholder="gpt-4o-mini" value="${CFG.model || ''}"/>
+      <div class="h">建议用便宜快的模型，这题不需要顶级推理。Anthropic 可填 claude-3-5-haiku-latest。</div></div>
+    <div class="field"><label>孩子称呼</label>
+      <input id="s-name" value="${CFG.name || ''}"/></div>
+    <div class="row"><button class="btn" onclick="saveSet()">保存</button>
+      <button class="btn gy" onclick="testSet()">测试连通</button>
+      <button class="btn gy" onclick="clearSet()">清空 Key</button></div>
+    <div id="setres"></div>`, '<button class="btn gy sm" onclick="closeModal()">关闭</button>');
+}
+function saveSet() {
+  CFG = { key: $('#s-key').value.trim(), base: $('#s-base').value.trim(), model: $('#s-model').value.trim() || 'gpt-4o-mini', name: $('#s-name').value.trim() || '同学' };
+  LS.set('cfg', CFG); paintSetBtn();
+  $('#setres').innerHTML = '<div class="fb ok" style="margin-left:0"><div class="fh"><span class="ic">✓</span>已保存</div>只存在这台设备上。</div>';
+}
+async function testSet() {
+  const k = $('#s-key').value.trim(), b = $('#s-base').value.trim(), m = $('#s-model').value.trim() || 'gpt-4o-mini';
+  if (!k) { $('#setres').innerHTML = '<div class="fb no" style="margin-left:0">先填 Key。</div>'; return; }
+  $('#setres').innerHTML = '<div class="fb ai" style="margin-left:0"><span class="spin"></span> 测试中…</div>';
+  try {
+    const isA = b.includes('anthropic');
+    const r = await fetch((isA ? b.replace(/\/$/, '') + '/messages' : (b ? b.replace(/\/$/, '') : 'https://api.openai.com/v1') + '/chat/completions'),
+      { method: 'POST', headers: isA ? { 'Content-Type': 'application/json', 'x-api-key': k, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }
+                                     : { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + k },
+        body: JSON.stringify(isA ? { model: m, max_tokens: 20, messages: [{ role: 'user', content: '说"通了"两个字' }] }
+                                 : { model: m, max_tokens: 20, messages: [{ role: 'user', content: '说"通了"两个字' }] }) });
+    const j = await r.json();
+    const txt = isA ? ((j.content || [])[0] || {}).text : ((j.choices || [])[0] || {}).message?.content;
+    $('#setres').innerHTML = r.ok ? `<div class="fb ok" style="margin-left:0"><div class="fh"><span class="ic">✓</span>连通正常</div>模型回：${txt || '<i data-en="(blank)">(空)</i>'}</div>`
+      : `<div class="fb no" style="margin-left:0"><b>没通：</b>${(j.error && (j.error.message || j.error.type)) || JSON.stringify(j).slice(0, 260)}</div>`;
+  } catch (e) {
+    $('#setres').innerHTML = `<div class="fb no" style="margin-left:0"><b>请求失败：</b>${e.message}<br>常见原因：中转地址要带 /v1；或该接口不允许浏览器跨域（CORS）调用。</div>`;
+  }
+}
+function clearSet() { CFG = { key: '', base: '', model: 'gpt-4o-mini', name: CFG.name }; LS.set('cfg', CFG); paintSetBtn(); openSet(); }
+function paintSetBtn() {
+  const b = document.querySelectorAll('.hbtn')[1];
+  if (b) b.innerHTML = (CFG.key ? 'AI 已开 · ' : '') + '设置';
+}
+
+/* ---------- 弹层 ---------- */
+function modal(title, body, foot) {
+  const m = document.createElement('div');
+  m.className = 'mask'; m.id = 'mask';
+  m.innerHTML = `<div class="sheet" onclick="event.stopPropagation()">
+    <button class="cl" onclick="closeModal()">✕</button>
+    <h3>${title}</h3><div style="height:10px"></div>${body}
+    ${foot ? `<div class="row" style="margin-top:14px">${foot}</div>` : ''}</div>`;
+  m.onclick = closeModal;
+  document.body.appendChild(m);
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() { const m = $('#mask'); if (m) m.remove(); document.body.style.overflow = ''; }
+
+/* ---------- 启动 ---------- */
+home(); paintWBNum(); paintSetBtn();
+</script>
+<script>
+function setLang(l){document.body.className='lang-'+l;try{localStorage.setItem('ap_lang',l)}catch(e){}document.querySelectorAll('#langsw button').forEach(function(b){b.classList.toggle('on',b.dataset.l===l)});}
+try{setLang(localStorage.getItem('ap_lang')||'both')}catch(e){}
+</script>
+</body>
+</html>
